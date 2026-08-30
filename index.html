@@ -139,6 +139,8 @@ table.grille th.sem{left:0; width:46px; min-width:46px; text-align:center; font-
 table.grille th.champ{left:46px; width:158px; min-width:158px; padding:6px 8px; font-size:11px;
                       font-weight:600; border-right:2px solid var(--line-strong)}
 table.grille thead th.sem,table.grille thead th.champ{z-index:30}
+table.grille col.csem{width:46px}
+table.grille col.cchamp{width:158px}
 table.grille col.mois{width:190px}
 tr.sem-start td, tr.sem-start th{border-top:2px solid var(--line-strong)}
 tr.revision th.sem{background:var(--revision)}
@@ -332,8 +334,16 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 #printZone table.grille col.mois{width:auto}
 #printZone table.grille th,#printZone table.grille td{border:.4pt solid #999}
 #printZone table.grille thead th{position:static; padding:3pt 4pt}
-#printZone table.grille th.sem{position:static; width:22px; min-width:22px}
-#printZone table.grille th.champ{position:static; width:96px; min-width:96px; padding:3pt 4pt}
+/* La colonne SEM. doit loger « (Révision) » : à 7 pt il réclamait 57 px pour
+   45 disponibles, et débordait sur la colonne voisine — d'où un chevauchement
+   à l'impression. Colonne élargie, corps réduit, et repli de sécurité. */
+#printZone table.grille col.csem{width:54px}
+#printZone table.grille col.cchamp{width:150px}
+#printZone table.grille th.sem{position:static; width:auto; min-width:0;
+                               font-size:5.6pt; line-height:1.15; padding:2pt 1pt}
+#printZone table.grille th.champ{position:static; width:auto; min-width:0; padding:3pt 4pt}
+#printZone table.grille th.sem,#printZone table.grille th.champ{
+  overflow-wrap:break-word; word-break:normal; hyphens:none}
 #printZone .cell,#printZone .cell .txt{min-height:0}
 #printZone .cell .txt{padding:2pt 3pt; line-height:1.2}
 /* de la place pour annoter à la main après le cours */
@@ -3419,7 +3429,7 @@ function etatInitial() {
   });
   return {
     version: 1,
-    impression: "2pages",
+    impression: "2niveaux",
     ficheActive: f.id,
     fiches: [f],
     ref: {
@@ -3436,7 +3446,13 @@ function charger() {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const s = JSON.parse(raw);
-      if (s && Array.isArray(s.fiches) && s.fiches.length) return s;
+      if (s && Array.isArray(s.fiches) && s.fiches.length) {
+        // Le découpage 5 / 5 séparait un sous-niveau sur deux feuilles ; on
+        // bascule une fois sur la coupure par niveau, sans écraser un choix
+        // explicite fait après coup.
+        if (!s.coupureMigree) { s.impression = "2niveaux"; s.coupureMigree = true; }
+        return s;
+      }
     }
   } catch (e) { console.warn("Lecture du stockage impossible :", e); }
   return etatInitial();
@@ -3789,8 +3805,9 @@ function vueGrille() {
     <button class="btn ghost small" id="gModele">Recharger le modèle Mambo</button>
     <label style="font-size:12px;color:var(--ink-soft)">Impression
       <select id="gMiseEnPage" style="font-size:12px">
-        <option value="2pages"${state.impression !== "1page" ? " selected" : ""}>A3 paysage — 2 pages (5 mois par page)</option>
-        <option value="1page"${state.impression === "1page" ? " selected" : ""}>A3 paysage — 1 page (réduit)</option>
+        <option value="2niveaux"${state.impression === "2niveaux" ? " selected" : ""}>A3 — 2 pages, coupure au changement de niveau</option>
+        <option value="2pages"${state.impression === "2pages" ? " selected" : ""}>A3 — 2 pages, 5 mois par page (texte plus grand)</option>
+        <option value="1page"${state.impression === "1page" ? " selected" : ""}>A3 — 1 page (très réduit)</option>
       </select></label>
     <span class="spacer"></span>
     <span class="muted" style="font-size:12px">Cliquez dans une cellule pour saisir · bouton ▾ pour la liste du référentiel</span>
@@ -3851,7 +3868,11 @@ function vueGrille() {
     });
   });
 
-  $("#gMiseEnPage").onchange = e => { state.impression = e.target.value; sauver(true); };
+  $("#gMiseEnPage").onchange = e => {
+    state.impression = e.target.value;
+    state.coupureMigree = true;             // choix explicite : on n'y touchera plus
+    sauver(true);
+  };
   $("#gPdf").onclick = () => {
     preparerImpression();
     toast("Dans la fenêtre d'impression : « Enregistrer au format PDF », papier A3 paysage");
@@ -3883,7 +3904,7 @@ function tableGrilleHtml(f, idxMois, editable) {
     : `<div class="cell"><div class="txt">${esc(v || "")}</div></div>`;
 
   let h = `<table class="grille">
-    <colgroup><col style="width:46px"><col style="width:158px">${idxMois.map(() => '<col class="mois">').join("")}</colgroup>
+    <colgroup><col class="csem"><col class="cchamp">${idxMois.map(() => '<col class="mois">').join("")}</colgroup>
     <thead><tr>
       <th class="sem">SEM.</th><th class="champ">Champ</th>
       ${idxMois.map(i => `<th>Mois ${i + 1} — ${esc(f.mois[i])}</th>`).join("")}
@@ -4660,14 +4681,32 @@ function construirePageSeance() {
     </div></div>`;
 }
 
+/* Répartition des mois entre les pages imprimées. En deux pages, la coupure
+   suit un changement de sous-niveau plutôt que le milieu arithmétique : couper
+   au milieu séparait « Débutant Confirmé 1 » sur deux feuilles, janvier d'un
+   côté, février et mars de l'autre. À défaut de rupture exploitable — cycle
+   sans sous-niveaux — on retombe sur 5 / 5. */
+function decoupeGrille(f) {
+  if (state.impression === "1page") return [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]];
+  if (state.impression === "2pages") return [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]];
+  const ruptures = [];
+  for (let m = 3; m <= 7; m++) {
+    if (norm(f.sousNiveaux[m]) !== norm(f.sousNiveaux[m - 1])) ruptures.push(m);
+  }
+  const coupe = ruptures.length
+    ? ruptures.reduce((a, b) => Math.abs(b - 5) < Math.abs(a - 5) ? b : a)
+    : 5;
+  const g1 = [], g2 = [];
+  for (let m = 0; m < 10; m++) (m < coupe ? g1 : g2).push(m);
+  return [g1, g2];
+}
+
 /* Prépare la version imprimée de la grille : 1 ou 2 pages, mise à l'échelle
    pour tenir dans la zone imprimable. */
 function constuirePagesGrille(largeurMm, hauteurMm) {
   const f = fiche();
   const zone = $("#printZone");
-  const decoupe = state.impression === "1page"
-    ? [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
-    : [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]];
+  const decoupe = decoupeGrille(f);
 
   // 1,5 mm de garde : arrondis au pixel et imprécisions du pilote ne doivent pas
   // faire déborder la page sur une feuille supplémentaire, restée blanche.
@@ -4691,6 +4730,7 @@ function constuirePagesGrille(largeurMm, hauteurMm) {
 
   // La zone est masquée à l'écran : on la déplie hors champ le temps de mesurer.
   zone.style.cssText = "display:block;position:absolute;left:-20000px;top:0;width:" + W + "px";
+  const facteurs = [];
   $$(".page", zone).forEach(page => {
     const inner = $(".inner", page);
 
@@ -4719,7 +4759,13 @@ function constuirePagesGrille(largeurMm, hauteurMm) {
       k = bas;
     }
     inner.style.zoom = k;
+    facteurs.push(k);
   });
+
+  // Un facteur unique pour tout le document : calculé page par page, il donnait
+  // deux feuilles au corps de texte différent, ce qui se voit immédiatement.
+  const commun = Math.min.apply(null, facteurs);
+  $$(".inner", zone).forEach(inner => { inner.style.zoom = commun; });
   zone.style.cssText = "";
 }
 
