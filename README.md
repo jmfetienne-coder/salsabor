@@ -65,6 +65,15 @@ La grille y garde ses dix mois : on fait glisser le tableau latéralement, les
 colonnes **SEM.** et **Champ** restant figées à gauche. Sur un iPad mini, plus
 étroit, l'affichage passe à deux mois à la fois, sans défilement.
 
+## Mode sombre
+
+L'application suit le réglage clair / sombre de votre appareil, sans rien à
+activer. Le code couleur de la fiche est conservé : gris pour les objectifs
+cachés, bleu pour l'objectif affiché, vert pour les outils, jaune pour le
+réalisé.
+
+Les impressions et les PDF, eux, restent toujours clairs — le papier est blanc.
+
 ## Hors ligne
 
 L'application tient dans une seule page. Enregistrez-la

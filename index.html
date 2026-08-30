@@ -34,9 +34,64 @@
   --revision:#f3e8f4;        /* semaine S4 */
   --ok:#1f7a45;
   --warn:#a8600a;
+  --sur-accent:#ffffff;      /* texte posé sur le bordeaux */
+  --champ:#ffffff;           /* fond des champs et des cellules */
+  --survol:#f0f2f5;
+  --rayure:#fafbfc;          /* une ligne de tableau sur deux */
+  --placeholder:#aab2bd;
+  --ok-soft:#e3f2e8;
+  --warn-soft:#fbf0dd;
+  --danger:#8c1111; --danger-line:#e3bcbc; --danger-soft:#fbeaea;
+  --avis-bg:#fbf0dd; --avis-line:#ecd9b4; --avis-ink:#7a4a08;
+  --toast-bg:#1d2430; --toast-ink:#ffffff;
+  --voile:rgba(20,26,36,.45);
+  --filigrane:#8c1d3f;
+  color-scheme:light dark;
   --radius:8px;
   --shadow:0 1px 2px rgba(20,28,40,.06), 0 4px 14px rgba(20,28,40,.06);
   font-synthesis-weight:none;
+}
+
+/* ---------- Mode sombre ----------
+   Seules les variables changent : le code couleur pédagogique est conservé,
+   transposé en teintes sombres — gris pour F1-F4, bleu pour F5, vert pour les
+   outils, jaune pour le réalisé. L'impression, elle, reste claire : elle sort
+   sur du papier blanc (voir la remise à zéro dans @media print). */
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#151820;
+    --panel:#1c212a;
+    --ink:#e8ebf0;
+    --ink-soft:#9aa5b5;
+    --line:#2e3542;
+    --line-strong:#414a59;
+    --accent:#e8809d;        /* bordeaux éclairci : lisible sur fond sombre */
+    --accent-soft:#3b2029;
+    --cache:#252a33;
+    --cache-head:#2d3340;
+    --affiche:#1a2735;
+    --affiche-head:#23384f;
+    --outil:#1b2a20;
+    --outil-head:#24402c;
+    --realise:#2b2718;
+    --realise-head:#3f3821;
+    --revision:#2a2032;
+    --ok:#5cc98a;
+    --warn:#e2a95c;
+    --sur-accent:#1a1016;    /* texte sombre sur bordeaux éclairci */
+    --champ:#232935;
+    --survol:#2b323f;
+    --rayure:#20252e;
+    --placeholder:#6c7686;
+    --ok-soft:#1b2f22;
+    --warn-soft:#332813;
+    --danger:#f08a8a; --danger-line:#5a2b2b; --danger-soft:#3a1e1e;
+    --avis-bg:#332813; --avis-line:#4d3c1c; --avis-ink:#e2a95c;
+    --toast-bg:#e8ebf0; --toast-ink:#151820;
+    --voile:rgba(0,0,0,.62);
+    --filigrane:#e8809d;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.3);
+  }
 }
 
 *{box-sizing:border-box}
@@ -60,7 +115,7 @@ a{color:var(--accent)}
 .brand{display:flex; align-items:center; gap:10px}
 .logo{
   display:grid; place-items:center; width:38px; height:38px; border-radius:10px;
-  background:var(--accent); color:#fff; font-weight:800; letter-spacing:.5px;
+  background:var(--accent); color:var(--sur-accent); font-weight:800; letter-spacing:.5px;
 }
 .brand h1{font-size:16px; margin:0; letter-spacing:.6px}
 .brand p{font-size:11.5px; color:var(--ink-soft); margin:0}
@@ -69,7 +124,7 @@ a{color:var(--accent)}
 .tools{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap}
 
 select,input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],textarea{
-  font:inherit; color:inherit; background:#fff;
+  font:inherit; color:inherit; background:var(--champ);
   border:1px solid var(--line-strong); border-radius:6px; padding:6px 8px;
 }
 select:focus,input:focus,textarea:focus{outline:2px solid var(--accent); outline-offset:1px}
@@ -77,14 +132,14 @@ select:focus,input:focus,textarea:focus{outline:2px solid var(--accent); outline
 
 .btn{
   font:inherit; font-weight:600; cursor:pointer;
-  background:var(--accent); color:#fff; border:1px solid var(--accent);
+  background:var(--accent); color:var(--sur-accent); border:1px solid var(--accent);
   border-radius:6px; padding:6px 12px;
 }
 .btn:hover{filter:brightness(1.08)}
-.btn.ghost{background:#fff; color:var(--ink); border-color:var(--line-strong); font-weight:500}
-.btn.ghost:hover{background:#f0f2f5}
-.btn.danger{color:#8c1111; border-color:#e3bcbc}
-.btn.danger:hover{background:#fbeaea}
+.btn.ghost{background:var(--champ); color:var(--ink); border-color:var(--line-strong); font-weight:500}
+.btn.ghost:hover{background:var(--survol)}
+.btn.danger{color:var(--danger); border-color:var(--danger-line)}
+.btn.danger:hover{background:var(--danger-soft)}
 .btn.small{padding:3px 8px; font-size:12.5px}
 .icon-btn{background:none;border:0;font-size:22px;line-height:1;cursor:pointer;color:var(--ink-soft)}
 
@@ -117,18 +172,18 @@ main{padding:18px}
 .muted{color:var(--ink-soft)}
 .pill{display:inline-block; padding:2px 8px; border-radius:999px; font-size:11.5px;
       background:var(--accent-soft); color:var(--accent); font-weight:600}
-.pill.grey{background:#eceef1;color:var(--ink-soft)}
-.pill.ok{background:#e3f2e8;color:var(--ok)}
-.pill.warn{background:#fbf0dd;color:var(--warn)}
+.pill.grey{background:var(--cache);color:var(--ink-soft)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
 
-.bar{height:9px; background:#e9ecf1; border-radius:99px; overflow:hidden; margin:8px 0}
+.bar{height:9px; background:var(--line); border-radius:99px; overflow:hidden; margin:8px 0}
 .bar>i{display:block; height:100%; background:var(--accent); border-radius:99px}
 
 .toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px}
 .toolbar .spacer{flex:1}
 
 /* ---------- Grille annuelle ---------- */
-.grille-wrap{overflow:auto; border:1px solid var(--line-strong); border-radius:var(--radius); background:#fff;
+.grille-wrap{overflow:auto; border:1px solid var(--line-strong); border-radius:var(--radius); background:var(--panel);
              max-height:calc(100vh - 250px)}
 table.grille{border-collapse:separate; border-spacing:0; width:100%; font-size:12px; table-layout:fixed}
 table.grille th,table.grille td{border-right:1px solid var(--line); border-bottom:1px solid var(--line);
@@ -137,7 +192,7 @@ table.grille thead th{
   position:sticky; top:0; z-index:20; background:var(--cache-head); font-size:11.5px;
   padding:7px 8px; text-align:left; border-bottom:2px solid var(--line-strong);
 }
-table.grille th.sem, table.grille th.champ{position:sticky; z-index:21; background:#fff}
+table.grille th.sem, table.grille th.champ{position:sticky; z-index:21; background:var(--champ)}
 table.grille th.sem{left:0; width:46px; min-width:46px; text-align:center; font-size:11px;
                     background:var(--cache-head); border-right:1px solid var(--line-strong)}
 table.grille th.champ{left:46px; width:158px; min-width:158px; padding:6px 8px; font-size:11px;
@@ -159,20 +214,20 @@ tr.revision th.sem{background:var(--revision)}
   overflow-wrap:break-word; word-break:normal; hyphens:none;
   font:inherit; cursor:text;
 }
-.cell .txt:focus{outline:2px solid var(--accent); outline-offset:-2px; background:#fff}
-.cell .txt:empty::before{content:attr(data-ph); color:#aab2bd}
+.cell .txt:focus{outline:2px solid var(--accent); outline-offset:-2px; background:var(--champ)}
+.cell .txt:empty::before{content:attr(data-ph); color:var(--placeholder)}
 .cell .pick{
   position:absolute; top:2px; right:2px; width:16px; height:16px; border-radius:4px; border:1px solid var(--line-strong);
-  background:#fff; color:var(--ink-soft); font-size:10px; line-height:1; cursor:pointer; opacity:0; padding:0;
+  background:var(--champ); color:var(--ink-soft); font-size:10px; line-height:1; cursor:pointer; opacity:0; padding:0;
 }
 .cell:hover .pick,.cell:focus-within .pick{opacity:1}
-.cell .pick:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
+.cell .pick:hover{background:var(--accent); color:var(--sur-accent); border-color:var(--accent)}
 
 td.cache .cell{background:var(--cache)}
 td.affiche .cell{background:var(--affiche)}
 td.outil .cell{background:var(--outil)}
 td.realise .cell{background:var(--realise)}
-td.prio .cell{background:#fff}
+td.prio .cell{background:var(--champ)}
 td.sousniv{background:var(--accent-soft); text-align:center; font-weight:700; font-size:11px;
            letter-spacing:.6px; color:var(--accent); padding:5px}
 th.rowhead-cache{background:var(--cache)}
@@ -187,7 +242,7 @@ th.rowhead-realise{background:var(--realise)}
 .legend i{width:13px; height:13px; border-radius:3px; border:1px solid var(--line-strong); display:inline-block}
 
 /* ---------- Séance ---------- */
-.seance-sheet{background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+.seance-sheet{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
               padding:22px; box-shadow:var(--shadow); max-width:1000px}
 .seance-head{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
              border-bottom:2px solid var(--accent); padding-bottom:10px; margin-bottom:14px}
@@ -196,9 +251,9 @@ th.rowhead-realise{background:var(--realise)}
 .block{border:1px solid var(--line); border-radius:6px; overflow:hidden}
 .block>h4{margin:0; padding:6px 10px; font-size:11.5px; text-transform:uppercase; letter-spacing:.7px;
           display:flex; align-items:center; justify-content:space-between; gap:8px}
-.pickmini{border:1px solid var(--line-strong); background:#fff; color:var(--ink-soft); cursor:pointer;
+.pickmini{border:1px solid var(--line-strong); background:var(--champ); color:var(--ink-soft); cursor:pointer;
           border-radius:4px; width:20px; height:18px; line-height:1; font-size:11px; padding:0}
-.pickmini:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
+.pickmini:hover{background:var(--accent); color:var(--sur-accent); border-color:var(--accent)}
 .block>div{padding:9px 10px; white-space:pre-wrap}
 .block.cache>h4{background:var(--cache-head)} .block.cache{background:var(--cache)}
 .block.affiche>h4{background:var(--affiche-head)} .block.affiche{background:var(--affiche)}
@@ -210,15 +265,15 @@ th.rowhead-realise{background:var(--realise)}
 .block .edit:focus{outline:2px solid var(--accent); outline-offset:-2px}
 
 /* ---------- Tables génériques ---------- */
-table.data{width:100%; border-collapse:collapse; font-size:12.5px; background:#fff}
+table.data{width:100%; border-collapse:collapse; font-size:12.5px; background:var(--panel)}
 table.data th,table.data td{border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top;
                             overflow-wrap:break-word; word-break:normal; hyphens:none}
 table.data thead th{background:var(--cache-head); position:sticky; top:0; z-index:5; font-size:11.5px}
-table.data tbody tr:nth-child(even){background:#fafbfc}
+table.data tbody tr:nth-child(even){background:var(--rayure)}
 table.data tbody tr.past{color:var(--ink-soft)}
 table.data tbody tr.next{background:var(--accent-soft) !important; font-weight:600}
 table.data td .celledit{min-height:20px; padding:2px; white-space:pre-wrap}
-table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2px; background:#fff}
+table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2px; background:var(--champ)}
 .table-wrap{overflow:auto; max-height:62vh; border:1px solid var(--line); border-radius:var(--radius)}
 
 .fieldrow{display:grid; grid-template-columns:190px 1fr; gap:10px; align-items:start; margin-bottom:9px}
@@ -226,14 +281,14 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 .fieldrow input,.fieldrow select,.fieldrow textarea{width:100%}
 
 .subtabs{display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap}
-.subtab{font:inherit; cursor:pointer; background:#fff; border:1px solid var(--line-strong);
+.subtab{font:inherit; cursor:pointer; background:var(--champ); border:1px solid var(--line-strong);
         border-radius:99px; padding:5px 13px; color:var(--ink-soft)}
-.subtab.active{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
+.subtab.active{background:var(--accent); border-color:var(--accent); color:var(--sur-accent); font-weight:600}
 
 /* ---------- Modales ---------- */
-.modal-backdrop{position:fixed; inset:0; background:rgba(20,26,36,.45); display:grid; place-items:center; z-index:100; padding:20px}
+.modal-backdrop{position:fixed; inset:0; background:var(--voile); display:grid; place-items:center; z-index:100; padding:20px}
 [hidden]{display:none !important}
-.modal{background:#fff; border-radius:12px; width:min(860px,100%); max-height:90vh; display:flex; flex-direction:column;
+.modal{background:var(--panel); border-radius:12px; width:min(860px,100%); max-height:90vh; display:flex; flex-direction:column;
        box-shadow:0 24px 60px rgba(0,0,0,.3)}
 .modal-head{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line)}
 .modal-head h2{font-size:15px; margin:0}
@@ -243,9 +298,9 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 .modal-list{overflow:auto; padding:0 18px; flex:1; min-height:120px}
 .opt{padding:7px 9px; border-radius:6px; cursor:pointer; border:1px solid transparent; font-size:13px}
 .opt:hover{background:var(--accent-soft)}
-.opt.sel{background:var(--accent); color:#fff}
+.opt.sel{background:var(--accent); color:var(--sur-accent)}
 .opt .meta{display:block; font-size:11px; opacity:.75}
-.avis{background:#fbf0dd; border:1px solid #ecd9b4; color:#7a4a08; border-radius:6px;
+.avis{background:var(--avis-bg); border:1px solid var(--avis-line); color:var(--avis-ink); border-radius:6px;
       padding:8px 10px; font-size:12px; margin:6px 0 2px}
 .optgroup{font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft);
           margin:10px 0 4px; padding-left:9px}
@@ -256,7 +311,7 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 .modal-foot .btn.danger{margin-right:auto}
 
 .toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
-       background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:13px; z-index:200}
+       background:var(--toast-bg); color:var(--toast-ink); padding:9px 16px; border-radius:99px; font-size:13px; z-index:200}
 
 .notice-text p{max-width:80ch}
 .notice-text h3{margin-top:18px}
@@ -562,6 +617,17 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 
 /* ---------- Impression ---------- */
 @media print{
+  /* Le papier est blanc : on annule le thème sombre de l'écran. */
+  :root{
+    --bg:#f5f6f8; --panel:#ffffff; --ink:#1d2430; --ink-soft:#5b6675;
+    --line:#d9dee6; --line-strong:#b9c2ce; --accent:#8c1d3f; --accent-soft:#f6e9ee;
+    --cache:#eceef1; --cache-head:#dfe3e9; --affiche:#e3eefb; --affiche-head:#cfe0f5;
+    --outil:#e6f3e8; --outil-head:#d2e8d7; --realise:#fdf5da; --realise-head:#f7ead0;
+    --revision:#f3e8f4; --ok:#1f7a45; --warn:#a8600a;
+    --sur-accent:#ffffff; --champ:#ffffff; --survol:#f0f2f5; --rayure:#fafbfc;
+    --placeholder:#aab2bd; --filigrane:#8c1d3f;
+    color-scheme:light;
+  }
   .no-print,.topbar,.tabs,.footer,.cell .pick,.toolbar,.done-flag input,
   .toast,.modal-backdrop{display:none !important}
   /* sans cela, le code couleur dépend de la case « graphiques d'arrière-plan » */
@@ -3528,19 +3594,26 @@ function nbMoisVisibles() {
 let moisMobile = 0;
 
 /* Motif SVG répété en diagonale, encodé en URI de données. */
-function filigraneMotif(opacite, corps) {
+function filigraneMotif(opacite, corps, teinte) {
   const l = 380, h = 210, cx = l / 2, cy = h / 2;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${l}" height="${h}">` +
     `<text x="${cx}" y="${cy}" text-anchor="middle" ` +
     `font-family="Helvetica,Arial,sans-serif" font-size="${corps}" font-weight="700" ` +
-    `letter-spacing="1.5" fill="#8c1d3f" fill-opacity="${opacite}" ` +
+    `letter-spacing="1.5" fill="${teinte || "#8c1d3f"}" fill-opacity="${opacite}" ` +
     `transform="rotate(-30 ${cx} ${cy})">${FILIGRANE}</text></svg>`;
   return 'url("data:image/svg+xml,' + encodeURIComponent(svg).replace(/"/g, "%22") + '")';
 }
 
+const modeSombre = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+
 function poserFiligrane() {
+  // À l'écran, le filigrane suit le thème : en bordeaux sur fond clair, il
+  // disparaîtrait sur fond sombre. À l'impression il reste bordeaux, le papier
+  // étant blanc dans les deux cas.
+  const teinte = (getComputedStyle(document.documentElement)
+    .getPropertyValue("--filigrane") || "#8c1d3f").trim();
   const el = $("#filigrane");
-  if (el) el.style.backgroundImage = filigraneMotif(0.06, 21);
+  if (el) el.style.backgroundImage = filigraneMotif(modeSombre() ? 0.09 : 0.06, 21, teinte);
   let st = $("#styleFiligrane");
   if (!st) {
     st = document.createElement("style");
@@ -3549,10 +3622,10 @@ function poserFiligrane() {
   }
   // À l'impression, le filigrane est porté par chaque page : un élément en
   // position fixe ne se répète pas de façon fiable d'un moteur à l'autre.
-  const motif = filigraneMotif(0.11, 21);
+  const motifPapier = filigraneMotif(0.11, 21, "#8c1d3f");
   st.textContent =
-    `#printZone .page::after{background-image:${motif}}` +
-    `@media print{#filigrane{background-image:${motif}}}`;
+    `#printZone .page::after{background-image:${motifPapier}}` +
+    `@media print{#filigrane{background-image:${motifPapier}}}`;
 }
 
 /* ============================ Utilitaires ============================ */
@@ -5121,6 +5194,12 @@ function init() {
   };
   window.addEventListener("resize", surBascule);
   window.addEventListener("orientationchange", surBascule);
+
+  // Bascule clair / sombre du système : le filigrane change de teinte.
+  const mqSombre = window.matchMedia("(prefers-color-scheme: dark)");
+  const surTheme = () => poserFiligrane();
+  mqSombre.addEventListener ? mqSombre.addEventListener("change", surTheme)
+                            : mqSombre.addListener(surTheme);
 
   poserFiligrane();
   rendre();
