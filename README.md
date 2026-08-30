@@ -67,10 +67,13 @@ colonnes **SEM.** et **Champ** restant figées à gauche. Sur un iPad mini, plus
 
 ## Mode sombre
 
-L'application suit le réglage clair / sombre de votre appareil, sans rien à
-activer. Le code couleur de la fiche est conservé : gris pour les objectifs
-cachés, bleu pour l'objectif affiché, vert pour les outils, jaune pour le
-réalisé.
+Un sélecteur **Thème** en haut de l'écran propose **Système**, **Clair** ou
+**Sombre**. Par défaut l'application suit le réglage de votre appareil ; votre
+choix est conservé sur ce navigateur.
+
+Le code couleur de la fiche est conservé dans les deux thèmes : gris pour les
+objectifs cachés, bleu pour l'objectif affiché, vert pour les outils, jaune
+pour le réalisé.
 
 Les impressions et les PDF, eux, restent toujours clairs — le papier est blanc.
 

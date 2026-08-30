@@ -8,6 +8,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SALSABOR">
 <title>SALSABOR — Programmation annuelle</title>
+<script>
+/* Posé avant le premier affichage : sans cela, un choix « clair » sur un
+   système sombre laisserait apparaître un éclair sombre au chargement. */
+try{var t=localStorage.getItem('salsabor.theme');
+    if(t&&t!=='auto')document.documentElement.dataset.theme=t;}catch(e){}
+</script>
 <style>
 /* SALSABOR — Programmation annuelle
    Codes couleur repris de la fiche Excel :
@@ -57,8 +63,48 @@
    transposé en teintes sombres — gris pour F1-F4, bleu pour F5, vert pour les
    outils, jaune pour le réalisé. L'impression, elle, reste claire : elle sort
    sur du papier blanc (voir la remise à zéro dans @media print). */
+/* Choix explicite de l'utilisateur : il l'emporte sur le réglage du système. */
+:root[data-theme="clair"]{color-scheme:light}
+
+:root[data-theme="sombre"]{
+  color-scheme:dark;
+  --bg:#151820;
+  --panel:#1c212a;
+  --ink:#e8ebf0;
+  --ink-soft:#9aa5b5;
+  --line:#2e3542;
+  --line-strong:#414a59;
+  --accent:#e8809d;        /* bordeaux éclairci : lisible sur fond sombre */
+  --accent-soft:#3b2029;
+  --cache:#252a33;
+  --cache-head:#2d3340;
+  --affiche:#1a2735;
+  --affiche-head:#23384f;
+  --outil:#1b2a20;
+  --outil-head:#24402c;
+  --realise:#2b2718;
+  --realise-head:#3f3821;
+  --revision:#2a2032;
+  --ok:#5cc98a;
+  --warn:#e2a95c;
+  --sur-accent:#1a1016;    /* texte sombre sur bordeaux éclairci */
+  --champ:#232935;
+  --survol:#2b323f;
+  --rayure:#20252e;
+  --placeholder:#6c7686;
+  --ok-soft:#1b2f22;
+  --warn-soft:#332813;
+  --danger:#f08a8a; --danger-line:#5a2b2b; --danger-soft:#3a1e1e;
+  --avis-bg:#332813; --avis-line:#4d3c1c; --avis-ink:#e2a95c;
+  --toast-bg:#e8ebf0; --toast-ink:#151820;
+  --voile:rgba(0,0,0,.62);
+  --filigrane:#e8809d;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.3);
+}
+
+/* Réglage du système, sauf si « clair » a été demandé explicitement. */
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:not([data-theme="clair"]){
     --bg:#151820;
     --panel:#1c212a;
     --ink:#e8ebf0;
@@ -121,7 +167,10 @@ a{color:var(--accent)}
 .brand p{font-size:11.5px; color:var(--ink-soft); margin:0}
 .fiche-picker{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
 .fiche-picker label{font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.6px}
-.tools{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap}
+.tools{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+.choix-theme{display:flex; align-items:center; gap:5px}
+.choix-theme span{font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.6px}
+#selTheme{font-size:13px; padding:5px 7px}
 
 select,input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],textarea{
   font:inherit; color:inherit; background:var(--champ);
@@ -431,6 +480,8 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
   .aide-souris{display:none}
   .detail-fiche{display:none}
   .toolbar .btn.small{padding:6px 10px}
+  .choix-theme span{display:none}
+  #selTheme{max-width:96px; font-size:12.5px}
 
   /* Une seule rangée d'outils : le libellé du menu s'efface et les actions
      secondaires passent derrière « ⋯ ». Rien n'est retiré. */
@@ -555,9 +606,13 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
   .brand p,.brand h1{display:none}
   .logo{width:28px; height:28px; border-radius:7px; font-size:12px}
   .fiche-picker label{display:none}
-  /* 833 px de contenu pour 812 disponibles : 25 px de moins ici, et le bandeau
-     tient sur une seule rangée — 36 px regagnés pour la grille. */
-  #selFiche{max-width:160px}
+  /* Le bandeau est à saturation : le sélecteur de thème y ajoute ~90 px. On
+     rétrécit encore la liste des fiches et l'on masque « Dupliquer », action
+     rare sur un téléphone couché — elle reste offerte en portrait et sur tout
+     écran plus large. Sans quoi le bandeau reprendrait une seconde rangée. */
+  #selFiche{max-width:120px}
+  #btnDupliquer{display:none}
+  #selTheme{max-width:88px}
   .topbar .btn{padding:5px 9px; font-size:12.5px}
 
   .tabs{position:static; padding:0 8px}
@@ -617,16 +672,20 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 
 /* ---------- Impression ---------- */
 @media print{
-  /* Le papier est blanc : on annule le thème sombre de l'écran. */
+  /* Le papier est blanc : on annule le thème de l'écran.
+     « !important » plutôt qu'une surenchère de sélecteurs : la règle du mode
+     sombre est plus spécifique que « :root » et, en mode « système », aucun
+     attribut data-theme n'est posé pour s'y raccrocher. Sans cette priorité,
+     un professeur en thème sombre aurait sorti des PDF à fond noir. */
   :root{
-    --bg:#f5f6f8; --panel:#ffffff; --ink:#1d2430; --ink-soft:#5b6675;
-    --line:#d9dee6; --line-strong:#b9c2ce; --accent:#8c1d3f; --accent-soft:#f6e9ee;
-    --cache:#eceef1; --cache-head:#dfe3e9; --affiche:#e3eefb; --affiche-head:#cfe0f5;
-    --outil:#e6f3e8; --outil-head:#d2e8d7; --realise:#fdf5da; --realise-head:#f7ead0;
-    --revision:#f3e8f4; --ok:#1f7a45; --warn:#a8600a;
-    --sur-accent:#ffffff; --champ:#ffffff; --survol:#f0f2f5; --rayure:#fafbfc;
-    --placeholder:#aab2bd; --filigrane:#8c1d3f;
-    color-scheme:light;
+    --bg:#f5f6f8 !important; --panel:#ffffff !important; --ink:#1d2430 !important; --ink-soft:#5b6675 !important;
+    --line:#d9dee6 !important; --line-strong:#b9c2ce !important; --accent:#8c1d3f !important; --accent-soft:#f6e9ee !important;
+    --cache:#eceef1 !important; --cache-head:#dfe3e9 !important; --affiche:#e3eefb !important; --affiche-head:#cfe0f5 !important;
+    --outil:#e6f3e8 !important; --outil-head:#d2e8d7 !important; --realise:#fdf5da !important; --realise-head:#f7ead0 !important;
+    --revision:#f3e8f4 !important; --ok:#1f7a45 !important; --warn:#a8600a !important;
+    --sur-accent:#ffffff !important; --champ:#ffffff !important; --survol:#f0f2f5 !important; --rayure:#fafbfc !important;
+    --placeholder:#aab2bd !important; --filigrane:#8c1d3f !important;
+    color-scheme:light !important;
   }
   .no-print,.topbar,.tabs,.footer,.cell .pick,.toolbar,.done-flag input,
   .toast,.modal-backdrop{display:none !important}
@@ -686,6 +745,12 @@ body.print-grille{}
   </div>
 
   <div class="tools">
+    <label class="choix-theme" title="Apparence de l'application"><span>Thème</span>
+      <select id="selTheme">
+        <option value="auto">Système</option>
+        <option value="clair">Clair</option>
+        <option value="sombre">Sombre</option>
+      </select></label>
     <button id="btnExportJson" class="btn ghost" title="Sauvegarder toutes les fiches dans un fichier">Sauvegarder</button>
     <button id="btnImportJson" class="btn ghost" title="Restaurer depuis un fichier de sauvegarde">Restaurer</button>
     <input type="file" id="fileImport" accept=".json" hidden>
@@ -3604,7 +3669,30 @@ function filigraneMotif(opacite, corps, teinte) {
   return 'url("data:image/svg+xml,' + encodeURIComponent(svg).replace(/"/g, "%22") + '")';
 }
 
-const modeSombre = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+/* Le thème est une préférence de l'appareil, pas une donnée du projet : il vit
+   dans sa propre clé et ne voyage donc pas avec la sauvegarde des fiches —
+   restaurer une sauvegarde faite ailleurs n'impose pas son apparence. */
+const CLE_THEME = "salsabor.theme";
+
+function themeChoisi() {
+  try { return localStorage.getItem(CLE_THEME) || "auto"; } catch (e) { return "auto"; }
+}
+
+function appliquerTheme(valeur) {
+  const v = valeur || themeChoisi();
+  if (v === "auto") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = v;
+  try { localStorage.setItem(CLE_THEME, v); } catch (e) { /* navigation privée */ }
+  poserFiligrane();
+}
+
+/* Sombre effectif : le choix explicite s'il existe, sinon le réglage système. */
+const modeSombre = () => {
+  const v = themeChoisi();
+  if (v === "sombre") return true;
+  if (v === "clair") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+};
 
 function poserFiligrane() {
   // À l'écran, le filigrane suit le thème : en bordeaux sur fond clair, il
@@ -5197,11 +5285,15 @@ function init() {
 
   // Bascule clair / sombre du système : le filigrane change de teinte.
   const mqSombre = window.matchMedia("(prefers-color-scheme: dark)");
-  const surTheme = () => poserFiligrane();
+  const surTheme = () => { if (themeChoisi() === "auto") poserFiligrane(); };
   mqSombre.addEventListener ? mqSombre.addEventListener("change", surTheme)
                             : mqSombre.addListener(surTheme);
 
-  poserFiligrane();
+  const selTheme = $("#selTheme");
+  selTheme.value = themeChoisi();
+  selTheme.onchange = e => appliquerTheme(e.target.value);
+  appliquerTheme();
+
   rendre();
   sauver(true);
 }
