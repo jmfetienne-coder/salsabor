@@ -53,9 +53,11 @@ connexion.
 Grille annuelle en A3 paysage — 2 pages, ou 1 page réduite ; fiche de séance en
 A4 portrait.
 
-L'onglet **Séance** porte un bouton **Exporter en PDF** : il ouvre la fenêtre
-d'impression, où il faut choisir **« Enregistrer au format PDF »**. Le PDF
-obtenu est vectoriel, son texte reste sélectionnable.
+Deux boutons **Exporter en PDF** : dans l'onglet **Grille annuelle** pour la
+fiche de programmation annuelle (A3 paysage), dans l'onglet **Séance** pour la
+fiche d'un cours (A4 portrait). Tous deux ouvrent la fenêtre d'impression, où
+il faut choisir **« Enregistrer au format PDF »**. Le PDF obtenu est vectoriel,
+son texte reste sélectionnable.
 
 ---
 

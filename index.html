@@ -3784,6 +3784,7 @@ function vueGrille() {
   <div class="toolbar no-print">
     <button class="btn ghost small" id="gExportXls">Exporter vers Excel</button>
     <button class="btn ghost small" id="gExportCsv">Exporter en CSV</button>
+    <button class="btn small" id="gPdf" title="Ouvre l'impression : choisissez « Enregistrer au format PDF », papier A3 paysage">Exporter en PDF (A3)</button>
     <button class="btn ghost small" id="gVider">Vider la grille</button>
     <button class="btn ghost small" id="gModele">Recharger le modèle Mambo</button>
     <label style="font-size:12px;color:var(--ink-soft)">Impression
@@ -3851,6 +3852,11 @@ function vueGrille() {
   });
 
   $("#gMiseEnPage").onchange = e => { state.impression = e.target.value; sauver(true); };
+  $("#gPdf").onclick = () => {
+    preparerImpression();
+    toast("Dans la fenêtre d'impression : « Enregistrer au format PDF », papier A3 paysage");
+    setTimeout(() => window.print(), 400);
+  };
   $("#gExportXls").onclick = exporterXls;
   $("#gExportCsv").onclick = exporterCsv;
   $("#gVider").onclick = () => {
