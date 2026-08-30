@@ -1,0 +1,4612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SALSABOR — Programmation annuelle</title>
+<style>
+/* SALSABOR — Programmation annuelle
+   Codes couleur repris de la fiche Excel :
+   gris = objectifs cachés (F1-F4) · bleu = objectif affiché (F5)
+   vert = outils pédagogiques · jaune = réalisé + commentaires        */
+
+:root{
+  --bg:#f5f6f8;
+  --panel:#ffffff;
+  --ink:#1d2430;
+  --ink-soft:#5b6675;
+  --line:#d9dee6;
+  --line-strong:#b9c2ce;
+  --accent:#8c1d3f;          /* bordeaux salsa */
+  --accent-soft:#f6e9ee;
+  --cache:#eceef1;           /* F1-F4 */
+  --cache-head:#dfe3e9;
+  --affiche:#e3eefb;         /* F5 */
+  --affiche-head:#cfe0f5;
+  --outil:#e6f3e8;           /* outils */
+  --outil-head:#d2e8d7;
+  --realise:#fdf5da;         /* réalisé */
+  --realise-head:#f7ead0;
+  --revision:#f3e8f4;        /* semaine S4 */
+  --ok:#1f7a45;
+  --warn:#a8600a;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(20,28,40,.06), 0 4px 14px rgba(20,28,40,.06);
+  font-synthesis-weight:none;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0 0 .4em; line-height:1.25; font-weight:650}
+p{margin:0 0 .6em}
+a{color:var(--accent)}
+
+/* ---------- Barre supérieure ---------- */
+.topbar{
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  padding:10px 18px; background:var(--panel);
+  border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+  position:sticky; top:0; z-index:40;
+}
+.brand{display:flex; align-items:center; gap:10px}
+.logo{
+  display:grid; place-items:center; width:38px; height:38px; border-radius:10px;
+  background:var(--accent); color:#fff; font-weight:800; letter-spacing:.5px;
+}
+.brand h1{font-size:16px; margin:0; letter-spacing:.6px}
+.brand p{font-size:11.5px; color:var(--ink-soft); margin:0}
+.fiche-picker{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.fiche-picker label{font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.6px}
+.tools{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap}
+
+select,input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],textarea{
+  font:inherit; color:inherit; background:#fff;
+  border:1px solid var(--line-strong); border-radius:6px; padding:6px 8px;
+}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--accent); outline-offset:1px}
+#selFiche{max-width:340px}
+
+.btn{
+  font:inherit; font-weight:600; cursor:pointer;
+  background:var(--accent); color:#fff; border:1px solid var(--accent);
+  border-radius:6px; padding:6px 12px;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff; color:var(--ink); border-color:var(--line-strong); font-weight:500}
+.btn.ghost:hover{background:#f0f2f5}
+.btn.danger{color:#8c1111; border-color:#e3bcbc}
+.btn.danger:hover{background:#fbeaea}
+.btn.small{padding:3px 8px; font-size:12.5px}
+.icon-btn{background:none;border:0;font-size:22px;line-height:1;cursor:pointer;color:var(--ink-soft)}
+
+/* ---------- Onglets ---------- */
+.tabs{display:flex; gap:2px; padding:0 18px; background:var(--panel); border-bottom:1px solid var(--line);
+      position:sticky; top:59px; z-index:39; overflow-x:auto}
+.tab{
+  font:inherit; cursor:pointer; background:none; border:0; border-bottom:3px solid transparent;
+  padding:10px 14px; color:var(--ink-soft); white-space:nowrap;
+}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--accent); border-bottom-color:var(--accent); font-weight:650}
+
+main{padding:18px}
+.view{max-width:1900px; margin:0 auto}
+.footer{
+  display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding:10px 18px; font-size:11.5px; color:var(--ink-soft); border-top:1px solid var(--line);
+}
+.save-state{color:var(--ok)}
+
+/* ---------- Cartes ---------- */
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+      padding:16px; box-shadow:var(--shadow); margin-bottom:16px}
+.card h2{font-size:15px; letter-spacing:.3px}
+.card h3{font-size:13px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft)}
+.grid-cards{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.kpi{font-size:30px; font-weight:700; letter-spacing:-.5px}
+.kpi small{font-size:13px; font-weight:500; color:var(--ink-soft)}
+.muted{color:var(--ink-soft)}
+.pill{display:inline-block; padding:2px 8px; border-radius:999px; font-size:11.5px;
+      background:var(--accent-soft); color:var(--accent); font-weight:600}
+.pill.grey{background:#eceef1;color:var(--ink-soft)}
+.pill.ok{background:#e3f2e8;color:var(--ok)}
+.pill.warn{background:#fbf0dd;color:var(--warn)}
+
+.bar{height:9px; background:#e9ecf1; border-radius:99px; overflow:hidden; margin:8px 0}
+.bar>i{display:block; height:100%; background:var(--accent); border-radius:99px}
+
+.toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px}
+.toolbar .spacer{flex:1}
+
+/* ---------- Grille annuelle ---------- */
+.grille-wrap{overflow:auto; border:1px solid var(--line-strong); border-radius:var(--radius); background:#fff;
+             max-height:calc(100vh - 250px)}
+table.grille{border-collapse:separate; border-spacing:0; width:100%; font-size:12px; table-layout:fixed}
+table.grille th,table.grille td{border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+                                vertical-align:top; padding:0}
+table.grille thead th{
+  position:sticky; top:0; z-index:20; background:var(--cache-head); font-size:11.5px;
+  padding:7px 8px; text-align:left; border-bottom:2px solid var(--line-strong);
+}
+table.grille th.sem, table.grille th.champ{position:sticky; z-index:21; background:#fff}
+table.grille th.sem{left:0; width:46px; min-width:46px; text-align:center; font-size:11px;
+                    background:var(--cache-head); border-right:1px solid var(--line-strong)}
+table.grille th.champ{left:46px; width:158px; min-width:158px; padding:6px 8px; font-size:11px;
+                      font-weight:600; border-right:2px solid var(--line-strong)}
+table.grille thead th.sem,table.grille thead th.champ{z-index:30}
+table.grille col.mois{width:190px}
+tr.sem-start td, tr.sem-start th{border-top:2px solid var(--line-strong)}
+tr.revision th.sem{background:var(--revision)}
+
+.cell{position:relative; min-height:34px}
+.cell .txt{
+  display:block; min-height:34px; padding:5px 20px 5px 7px; white-space:pre-wrap; word-break:break-word;
+  font:inherit; cursor:text;
+}
+.cell .txt:focus{outline:2px solid var(--accent); outline-offset:-2px; background:#fff}
+.cell .txt:empty::before{content:attr(data-ph); color:#aab2bd}
+.cell .pick{
+  position:absolute; top:2px; right:2px; width:16px; height:16px; border-radius:4px; border:1px solid var(--line-strong);
+  background:#fff; color:var(--ink-soft); font-size:10px; line-height:1; cursor:pointer; opacity:0; padding:0;
+}
+.cell:hover .pick,.cell:focus-within .pick{opacity:1}
+.cell .pick:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
+
+td.cache .cell{background:var(--cache)}
+td.affiche .cell{background:var(--affiche)}
+td.outil .cell{background:var(--outil)}
+td.realise .cell{background:var(--realise)}
+td.prio .cell{background:#fff}
+td.sousniv{background:var(--accent-soft); text-align:center; font-weight:700; font-size:11px;
+           letter-spacing:.6px; color:var(--accent); padding:5px}
+th.rowhead-cache{background:var(--cache)}
+th.rowhead-affiche{background:var(--affiche)}
+th.rowhead-outil{background:var(--outil)}
+th.rowhead-realise{background:var(--realise)}
+
+.done-flag{display:flex; align-items:center; gap:5px; padding:3px 6px; border-top:1px dashed var(--line-strong);
+           font-size:11px; color:var(--ink-soft)}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-soft); margin:10px 0 0}
+.legend span{display:flex; align-items:center; gap:6px}
+.legend i{width:13px; height:13px; border-radius:3px; border:1px solid var(--line-strong); display:inline-block}
+
+/* ---------- Séance ---------- */
+.seance-sheet{background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+              padding:22px; box-shadow:var(--shadow); max-width:1000px}
+.seance-head{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+             border-bottom:2px solid var(--accent); padding-bottom:10px; margin-bottom:14px}
+.seance-head h2{font-size:19px; margin:0}
+.seance-grid{display:grid; gap:12px; grid-template-columns:1fr 1fr}
+.block{border:1px solid var(--line); border-radius:6px; overflow:hidden}
+.block>h4{margin:0; padding:6px 10px; font-size:11.5px; text-transform:uppercase; letter-spacing:.7px;
+          display:flex; align-items:center; justify-content:space-between; gap:8px}
+.pickmini{border:1px solid var(--line-strong); background:#fff; color:var(--ink-soft); cursor:pointer;
+          border-radius:4px; width:20px; height:18px; line-height:1; font-size:11px; padding:0}
+.pickmini:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
+.block>div{padding:9px 10px; white-space:pre-wrap}
+.block.cache>h4{background:var(--cache-head)} .block.cache{background:var(--cache)}
+.block.affiche>h4{background:var(--affiche-head)} .block.affiche{background:var(--affiche)}
+.block.outil>h4{background:var(--outil-head)} .block.outil{background:var(--outil)}
+.block.realise>h4{background:var(--realise-head)} .block.realise{background:var(--realise)}
+.block.wide{grid-column:1/-1}
+.block .edit{width:100%; border:0; background:transparent; font:inherit; resize:vertical; padding:9px 10px}
+.block .edit:focus{outline:2px solid var(--accent); outline-offset:-2px}
+
+/* ---------- Tables génériques ---------- */
+table.data{width:100%; border-collapse:collapse; font-size:12.5px; background:#fff}
+table.data th,table.data td{border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top}
+table.data thead th{background:var(--cache-head); position:sticky; top:0; z-index:5; font-size:11.5px}
+table.data tbody tr:nth-child(even){background:#fafbfc}
+table.data tbody tr.past{color:var(--ink-soft)}
+table.data tbody tr.next{background:var(--accent-soft) !important; font-weight:600}
+table.data td .celledit{min-height:20px; padding:2px; white-space:pre-wrap}
+table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2px; background:#fff}
+.table-wrap{overflow:auto; max-height:62vh; border:1px solid var(--line); border-radius:var(--radius)}
+
+.fieldrow{display:grid; grid-template-columns:190px 1fr; gap:10px; align-items:start; margin-bottom:9px}
+.fieldrow label{font-size:12.5px; color:var(--ink-soft); padding-top:7px}
+.fieldrow input,.fieldrow select,.fieldrow textarea{width:100%}
+
+.subtabs{display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap}
+.subtab{font:inherit; cursor:pointer; background:#fff; border:1px solid var(--line-strong);
+        border-radius:99px; padding:5px 13px; color:var(--ink-soft)}
+.subtab.active{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
+
+/* ---------- Modales ---------- */
+.modal-backdrop{position:fixed; inset:0; background:rgba(20,26,36,.45); display:grid; place-items:center; z-index:100; padding:20px}
+[hidden]{display:none !important}
+.modal{background:#fff; border-radius:12px; width:min(860px,100%); max-height:90vh; display:flex; flex-direction:column;
+       box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.modal-head{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line)}
+.modal-head h2{font-size:15px; margin:0}
+.modal-filters{display:flex; gap:8px; flex-wrap:wrap; padding:10px 18px 0}
+.modal-filters label{display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--ink-soft)}
+#pickerSearch{margin:10px 18px; }
+.modal-list{overflow:auto; padding:0 18px; flex:1; min-height:120px}
+.opt{padding:7px 9px; border-radius:6px; cursor:pointer; border:1px solid transparent; font-size:13px}
+.opt:hover{background:var(--accent-soft)}
+.opt.sel{background:var(--accent); color:#fff}
+.opt .meta{display:block; font-size:11px; opacity:.75}
+.avis{background:#fbf0dd; border:1px solid #ecd9b4; color:#7a4a08; border-radius:6px;
+      padding:8px 10px; font-size:12px; margin:6px 0 2px}
+.optgroup{font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft);
+          margin:10px 0 4px; padding-left:9px}
+.modal-free{padding:10px 18px 0; border-top:1px solid var(--line); margin-top:10px}
+.modal-free label{font-size:11.5px; color:var(--ink-soft)}
+.modal-free textarea{width:100%; margin-top:4px}
+.modal-foot{display:flex; gap:8px; justify-content:flex-end; padding:14px 18px; border-top:1px solid var(--line)}
+.modal-foot .btn.danger{margin-right:auto}
+
+.toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+       background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:13px; z-index:200}
+
+.notice-text p{max-width:80ch}
+.notice-text h3{margin-top:18px}
+
+/* ---------- Zone d'impression dédiée (grille annuelle) ---------- */
+#printZone{display:none}
+#printZone .page{overflow:hidden}
+#printZone .inner{background:#fff}
+#printZone .print-head h1{font-size:11pt; margin:0 0 2pt}
+#printZone .print-head p{font-size:7.5pt; margin:0 0 4pt; color:#333}
+#printZone .print-legend{font-size:6.5pt; color:#555; margin:4pt 0 0}
+#printZone table.grille{font-size:7pt; table-layout:fixed; width:100%}
+#printZone table.grille th,#printZone table.grille td{border:.4pt solid #999}
+#printZone table.grille thead th{position:static; padding:3pt 4pt}
+#printZone table.grille th.sem{position:static; width:22px; min-width:22px}
+#printZone table.grille th.champ{position:static; width:96px; min-width:96px; padding:3pt 4pt}
+#printZone .cell,#printZone .cell .txt{min-height:0}
+#printZone .cell .txt{padding:2pt 3pt; line-height:1.2}
+/* de la place pour annoter à la main après le cours */
+#printZone td.realise .cell,#printZone td.realise .cell .txt{min-height:24px}
+
+/* ---------- Impression ---------- */
+@media print{
+  .no-print,.topbar,.tabs,.footer,.cell .pick,.toolbar,.done-flag input{display:none !important}
+  body{background:#fff}
+  main{padding:0}
+  .card{box-shadow:none; border:0; padding:0}
+  .grille-wrap{overflow:visible; max-height:none; border:0}
+  table.grille{font-size:7.2pt; table-layout:fixed; width:100%}
+  table.grille col.mois{width:auto}
+  table.grille th.sem{width:24px;min-width:24px}
+  table.grille th.champ{width:92px;min-width:92px}
+  table.grille thead th,table.grille th.sem,table.grille th.champ{position:static}
+  .cell .txt{padding:2px 3px; min-height:0}
+  .cell,.cell .txt{min-height:0}
+  table.grille th,table.grille td{border:.4pt solid #999}
+  .table-wrap{max-height:none; overflow:visible; border:0}
+  table.data{font-size:8.5pt}
+  .seance-sheet{border:0; box-shadow:none; padding:0}
+  .view[hidden]{display:none !important}
+  @page{margin:8mm}
+
+  /* Grille annuelle : on imprime la zone dédiée, mise à l'échelle. */
+  body.print-zone #main,body.print-zone .footer{display:none !important}
+  body.print-zone #printZone{display:block}
+  #printZone .page{page-break-after:always; break-after:page}
+  #printZone .page:last-child{page-break-after:auto; break-after:auto}
+}
+body.print-grille{}
+@media print{
+  body.print-grille{ }
+}
+
+</style>
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="brand">
+    <span class="logo">SB</span>
+    <div>
+      <h1>SALSABOR</h1>
+      <p>Programmation annuelle des cours de danse</p>
+    </div>
+  </div>
+
+  <div class="fiche-picker">
+    <label for="selFiche">Fiche</label>
+    <select id="selFiche" title="Fiche active"></select>
+    <button id="btnNouvelleFiche" class="btn" title="Créer une fiche">+ Fiche</button>
+    <button id="btnDupliquer" class="btn ghost" title="Dupliquer la fiche active">Dupliquer</button>
+    <button id="btnRenommer" class="btn ghost" title="Modifier l'en-tête de la fiche">En-tête</button>
+    <button id="btnSupprimer" class="btn ghost danger" title="Supprimer la fiche active">Supprimer</button>
+  </div>
+
+  <div class="tools">
+    <button id="btnExportJson" class="btn ghost" title="Sauvegarder toutes les fiches dans un fichier">Sauvegarder</button>
+    <button id="btnImportJson" class="btn ghost" title="Restaurer depuis un fichier de sauvegarde">Restaurer</button>
+    <input type="file" id="fileImport" accept=".json" hidden>
+    <button id="btnImprimer" class="btn" title="Imprimer la vue courante">Imprimer</button>
+  </div>
+</header>
+
+<nav class="tabs no-print" id="tabs">
+  <button class="tab active" data-view="dashboard">Tableau de bord</button>
+  <button class="tab" data-view="grille">Grille annuelle</button>
+  <button class="tab" data-view="seance">Séance</button>
+  <button class="tab" data-view="calendrier">Calendrier</button>
+  <button class="tab" data-view="referentiel">Référentiel</button>
+  <button class="tab" data-view="notice">Notice</button>
+</nav>
+
+<main id="main">
+  <section class="view" id="view-dashboard"></section>
+  <section class="view" id="view-grille" hidden></section>
+  <section class="view" id="view-seance" hidden></section>
+  <section class="view" id="view-calendrier" hidden></section>
+  <section class="view" id="view-referentiel" hidden></section>
+  <section class="view" id="view-notice" hidden></section>
+</main>
+
+<footer class="footer no-print">
+  <span>Document interne confidentiel — à ne pas diffuser en dehors de l'équipe pédagogique.</span>
+  <span id="saveState" class="save-state"></span>
+</footer>
+
+<!-- Sélecteur de valeurs (listes du référentiel) -->
+<div class="modal-backdrop" id="picker" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+    <div class="modal-head">
+      <h2 id="pickerTitle">Choisir une valeur</h2>
+      <button class="icon-btn" id="pickerClose" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="modal-filters" id="pickerFilters"></div>
+    <input type="search" id="pickerSearch" placeholder="Rechercher…" autocomplete="off">
+    <div class="modal-list" id="pickerList"></div>
+    <div class="modal-free">
+      <label for="pickerFree">Saisie libre (la liste propose, elle n'impose pas)</label>
+      <textarea id="pickerFree" rows="3"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="pickerCancel">Annuler</button>
+      <button class="btn ghost danger" id="pickerClear">Vider la cellule</button>
+      <button class="btn" id="pickerOk">Valider</button>
+    </div>
+  </div>
+</div>
+
+<!-- Formulaire générique -->
+<div class="modal-backdrop" id="formModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="formTitle">Formulaire</h2>
+      <button class="icon-btn" id="formClose" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="modal-list" id="formBody"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="formCancel">Annuler</button>
+      <button class="btn" id="formOk">Valider</button>
+    </div>
+  </div>
+</div>
+
+<div id="printZone" aria-hidden="true"></div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+// Référentiel SALSABOR — généré depuis « SALSABOR_Fiche_Programmation_Mambo_Couple_Debutant V3.xlsx »
+// Document interne confidentiel — ne pas diffuser hors de l'équipe pédagogique.
+window.SALSABOR_REF = {
+ "source": "SALSABOR_Fiche_Programmation_Mambo_Couple_Debutant V3.xlsx",
+ "notice": [
+  "NOTICE D'UTILISATION — Fiches de programmation annuelle SALSABOR",
+  "Structure du classeur",
+  "• Onglet « Mambo Couple Débutant » : fiche modèle (1 fiche = 1 Professeur × 1 Discipline × 1 Type de cours × 1 Cycle/Niveau, sur 40 semaines / 10 mois).",
+  "• Onglet « Réf_Objectifs_Cachés » : table éditable des objectifs techniques (F1 Musicalité, F2 Appuis, F3 Connexion, F4 Respiration) par niveau, + 4 colonnes de listes filtrées (Liste_F1 à F4) qui alimentent les menus déroulants.",
+  "• Onglet « Réf_Objectifs_Affichés » : table éditable des supports chorégraphiques (famille × couches d'enrichissement du cadre chorégraphique), avec une colonne RESULTAT calculée automatiquement — alimente le menu déroulant F5.",
+  "• Onglet « Réf_Outils_Pédagogiques » : banque éditable d'outils pédagogiques unitaires — alimente les menus déroulants Outil 1 / Outil 2 / Outil 3.",
+  "• Onglet « Listes » : vocabulaire complémentaire (disciplines, types de cours, cycles, rôles Leader/Co-leader, timing).",
+  "Fonctionnement des menus déroulants (IMPORTANT)",
+  "• Chaque cellule F1 à F4, F5 et Outil 1/2/3 de la fiche contient une FORMULE qui va chercher sa valeur dans la table de référence correspondante : la valeur affichée correspond donc toujours exactement à une entrée valide du menu déroulant.",
+  "• Les menus déroulants s'appuient sur des plages nommées dynamiques (Liste_F1 à F4, Liste_F5, Liste_Outils), visibles dans Formules > Gestionnaire de noms. Quand vous ajoutez une ligne juste en dessous d'une table de référence (même tout en bas d'une colonne), la plage nommée s'étend automatiquement — le menu déroulant se met à jour tout seul, sans aucune manipulation supplémentaire.",
+  "• Important : n'insérez pas de ligne « au milieu » d'une colonne de liste (I à L sur Réf_Objectifs_Cachés, K sur Réf_Objectifs_Affichés, B sur Réf_Outils_Pédagogiques) en laissant un trou — la plage nommée suppose une colonne continue, sans case vide isolée entre deux valeurs.",
+  "• Vous pouvez choisir une valeur dans le menu déroulant PUIS la compléter ou la modifier librement à la main dans la cellule : la validation n'est pas bloquante (elle propose, elle n'impose pas).",
+  "• Si vous tapez directement dans une cellule de la fiche (sans passer par le menu), vous remplacez la formule par du texte libre — c'est normal et voulu, cela permet l'amendement au cas par cas.",
+  "Comment lire une fiche",
+  "• Colonnes = les 10 mois de l'année (Septembre à Juin). Lignes = les 4 semaines de chaque mois (S1 à S3 = acquisition, S4 = révision), déclinées en 9 champs, chacun avec une cellule libellé (colonne B) et une cellule objectif par mois :",
+  "F1 – MUSICALITÉ, F2 – APPUIS, F3 – CONNEXION, F4 – RESPIRATION (fond gris) : les 4 fondamentaux techniques = objectifs CACHÉS, à usage du professeur.",
+  "F5 – SUPPORT CHORÉGRAPHIQUE (fond bleu clair) : le 5ème fondamental = objectif AFFICHÉ aux élèves.",
+  "OUTIL 1 / OUTIL 2 / OUTIL 3 (fond vert) : jusqu'à 3 outils pédagogiques unitaires par semaine (laisser vide si non utilisé).",
+  "RÉALISÉ + Commentaires (fond jaune) : champ libre, à compléter après le cours.",
+  "• Une ligne « Objectifs prioritaires du mois » (1 à 3 objectifs, maximum 2 par cours) cadre chaque mois avant le détail hebdomadaire.",
+  "• Pour le cycle Débutant, une ligne « sous-niveau » rappelle la progression théorique : Initiation (1 mois) → Débutant (3 mois) → Débutant Confirmé 1 (3 mois) → Débutant Confirmé 2 (3 mois).",
+  "• Pour les 4 semaines de révision (S4) de Septembre à Mai, le champ F5 reste en texte libre (il synthétise plusieurs figures et ne correspond donc pas à une ligne unique de la table) ; celui de Juin (restitution finale) est bien relié à la table.",
+  "Conventions retenues (Mambo)",
+  "• Timing : PALLADIUM (2-3-4 / 6-7-8) du niveau Initiation au niveau Débutant Confirmé 2. Le timing 1-2-3 / 5-6-7 est réservé à la Cubaine et au Mambo à partir du niveau Intermédiaire.",
+  "• Rôles : « Leader » (au lieu de « Garçon ») et « Co-leader » (au lieu de « Fille » / « Follower »).",
+  "Pour créer une nouvelle fiche (autre discipline / niveau / type de cours)",
+  "1. Dupliquer l'onglet modèle (clic droit sur l'onglet > Déplacer ou copier > Créer une copie).",
+  "2. Renommer l'onglet selon la convention : Discipline + Type de cours + Niveau (ex. « Cubaine Solo Intermédiaire »).",
+  "3. Mettre à jour le bandeau d'en-tête (Professeur, Discipline, Type de cours, Cycle/Niveau) via les menus déroulants.",
+  "4. Adapter les 3 tables de référence à la discipline concernée, puis reconstruire les formules des cellules F1-F5/Outils (ou les remplacer par une sélection directe dans les menus déroulants).",
+  "5. Pour les cycles Intermédiaire et Avancé (sans sous-niveaux détaillés), fusionner la ligne « sous-niveau » sur l'ensemble des 10 mois ou la supprimer si non pertinente.",
+  "Impression",
+  "• La fiche est calibrée pour une impression sur 1 page au format A3 paysage (marges réduites, ajustement automatique « 1 page en largeur × 1 page en hauteur »).",
+  "Confidentialité",
+  "• Ce classeur et son contenu pédagogique sont un document interne confidentiel : à ne pas diffuser en dehors de l'équipe pédagogique concernée."
+ ],
+ "listes": {
+  "disciplines": [
+   "Mambo",
+   "Cubaine (Salsa)",
+   "Bachata",
+   "Kizomba"
+  ],
+  "typesCours": [
+   "Solo",
+   "Couple"
+  ],
+  "cycles": [
+   "Débutant",
+   "Intermédiaire",
+   "Avancé"
+  ],
+  "sousNiveaux": [
+   "Initiation",
+   "Débutant",
+   "Débutant Confirmé 1",
+   "Débutant Confirmé 2"
+  ],
+  "roles": [
+   "Leader",
+   "Co-leader"
+  ],
+  "timings": [
+   "Palladium (2-3-4 / 6-7-8) — Initiation à Débutant Confirmé 2",
+   "1-2-3 / 5-6-7 — réservé Cubaine et Mambo Intermédiaire+"
+  ]
+ },
+ "objectifsCaches": [
+  {
+   "n": "1",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer la pulsation en timing Palladium (2-3-4 / 6-7-8), en accompagné",
+   "affiche": "[INITIATION] Marquer la pulsation en timing Palladium (2-3-4 / 6-7-8), en accompagné"
+  },
+  {
+   "n": "2",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Repérer le début de phrase musicale, en couple",
+   "affiche": "[INITIATION] Repérer le début de phrase musicale, en couple"
+  },
+  {
+   "n": "3",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer la pulsation en autonomie relative avec le Leader",
+   "affiche": "[INITIATION] Marquer la pulsation en autonomie relative avec le Leader"
+  },
+  {
+   "n": "4",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : stabilité de la pulsation Palladium en couple",
+   "affiche": "[INITIATION] Révision : stabilité de la pulsation Palladium en couple"
+  },
+  {
+   "n": "5",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium (2-3-4 / 6-7-8) sur le pas de Mambo",
+   "affiche": "[DÉBUTANT] Marquer le timing Palladium (2-3-4 / 6-7-8) sur le pas de Mambo"
+  },
+  {
+   "n": "6",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Repérer le cycle musical de base en couple",
+   "affiche": "[DÉBUTANT] Repérer le cycle musical de base en couple"
+  },
+  {
+   "n": "7",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium en autonomie (couple)",
+   "affiche": "[DÉBUTANT] Marquer le timing Palladium en autonomie (couple)"
+  },
+  {
+   "n": "8",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : timing Palladium en couple",
+   "affiche": "[DÉBUTANT] Révision : timing Palladium en couple"
+  },
+  {
+   "n": "9",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium sur le Cross Body Lead",
+   "affiche": "[DÉBUTANT] Marquer le timing Palladium sur le Cross Body Lead"
+  },
+  {
+   "n": "10",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Repérer le cycle musical pendant la rotation",
+   "affiche": "[DÉBUTANT] Repérer le cycle musical pendant la rotation"
+  },
+  {
+   "n": "11",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium sur CBL et CBLT",
+   "affiche": "[DÉBUTANT] Marquer le timing Palladium sur CBL et CBLT"
+  },
+  {
+   "n": "12",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : timing Palladium sur le CBL",
+   "affiche": "[DÉBUTANT] Révision : timing Palladium sur le CBL"
+  },
+  {
+   "n": "13",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium sur l'Open Break",
+   "affiche": "[DÉBUTANT] Marquer le timing Palladium sur l'Open Break"
+  },
+  {
+   "n": "14",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Repérer les temps forts pendant l'ouverture",
+   "affiche": "[DÉBUTANT] Repérer les temps forts pendant l'ouverture"
+  },
+  {
+   "n": "15",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium sur OBST / Cape / Papillon",
+   "affiche": "[DÉBUTANT] Marquer le timing Palladium sur OBST / Cape / Papillon"
+  },
+  {
+   "n": "16",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan trimestre : timing Palladium consolidé",
+   "affiche": "[DÉBUTANT] Bilan trimestre : timing Palladium consolidé"
+  },
+  {
+   "n": "17",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Jouer avec le timing Palladium (variations de placement)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Jouer avec le timing Palladium (variations de placement)"
+  },
+  {
+   "n": "18",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Introduire le timing 2-3-4/6-7-8 avec breaks marqués",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Introduire le timing 2-3-4/6-7-8 avec breaks marqués"
+  },
+  {
+   "n": "19",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Faire varier son placement sur la musique",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Faire varier son placement sur la musique"
+  },
+  {
+   "n": "20",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : jeu sur le timing Palladium",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : jeu sur le timing Palladium"
+  },
+  {
+   "n": "21",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer le timing Palladium sur la Boucle",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Marquer le timing Palladium sur la Boucle"
+  },
+  {
+   "n": "22",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Jouer avec le rythme pendant le guidage élastique",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Jouer avec le rythme pendant le guidage élastique"
+  },
+  {
+   "n": "23",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing Palladium stable sur Open Break + Boucle",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Timing Palladium stable sur Open Break + Boucle"
+  },
+  {
+   "n": "24",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : timing sur l'enchaînement",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : timing sur l'enchaînement"
+  },
+  {
+   "n": "25",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing Palladium sur les tours (préparation du spot)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Timing Palladium sur les tours (préparation du spot)"
+  },
+  {
+   "n": "26",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Repérer la musique pendant la rotation",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Repérer la musique pendant la rotation"
+  },
+  {
+   "n": "27",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing Palladium stable + style associé",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Timing Palladium stable + style associé"
+  },
+  {
+   "n": "28",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan mi-parcours : timing sur les tours",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : timing sur les tours"
+  },
+  {
+   "n": "29",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Consolider le timing Palladium sur tout le répertoire",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Consolider le timing Palladium sur tout le répertoire"
+  },
+  {
+   "n": "30",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer les breaks musicaux",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Marquer les breaks musicaux"
+  },
+  {
+   "n": "31",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Marquer la clave dans le Mambo",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Marquer la clave dans le Mambo"
+  },
+  {
+   "n": "32",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : musicalité (breaks + clave)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : musicalité (breaks + clave)"
+  },
+  {
+   "n": "33",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing Palladium en improvisation guidée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Timing Palladium en improvisation guidée"
+  },
+  {
+   "n": "34",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing sur la préparation du double tour",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Timing sur la préparation du double tour"
+  },
+  {
+   "n": "35",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing stable sur enchaînement personnel",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Timing stable sur enchaînement personnel"
+  },
+  {
+   "n": "36",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : timing en créativité",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : timing en créativité"
+  },
+  {
+   "n": "37",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Construire la trame rythmique de la routine",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Construire la trame rythmique de la routine"
+  },
+  {
+   "n": "38",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser le timing sur la routine complète",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Stabiliser le timing sur la routine complète"
+  },
+  {
+   "n": "39",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Timing Palladium à tempo croissant",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Timing Palladium à tempo croissant"
+  },
+  {
+   "n": "40",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Évaluation finale : timing Palladium maîtrisé",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : timing Palladium maîtrisé"
+  },
+  {
+   "n": "41",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Aligner les appuis de base, en miroir avec le partenaire",
+   "affiche": "[INITIATION] Aligner les appuis de base, en miroir avec le partenaire"
+  },
+  {
+   "n": "42",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respecter l'alternance des pas en couple",
+   "affiche": "[INITIATION] Respecter l'alternance des pas en couple"
+  },
+  {
+   "n": "43",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser le transfert de poids simple",
+   "affiche": "[INITIATION] Stabiliser le transfert de poids simple"
+  },
+  {
+   "n": "44",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : alternance des pas et transfert de poids",
+   "affiche": "[INITIATION] Révision : alternance des pas et transfert de poids"
+  },
+  {
+   "n": "45",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respecter la marche (alternance + poids) en position fermée",
+   "affiche": "[DÉBUTANT] Respecter la marche (alternance + poids) en position fermée"
+  },
+  {
+   "n": "46",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Introduire la sortie 1er pas",
+   "affiche": "[DÉBUTANT] Introduire la sortie 1er pas"
+  },
+  {
+   "n": "47",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser la sortie 1er pas sur le Mambo",
+   "affiche": "[DÉBUTANT] Stabiliser la sortie 1er pas sur le Mambo"
+  },
+  {
+   "n": "48",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : marche et sortie 1er pas",
+   "affiche": "[DÉBUTANT] Révision : marche et sortie 1er pas"
+  },
+  {
+   "n": "49",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respecter l'alternance des pas dans le CBL",
+   "affiche": "[DÉBUTANT] Respecter l'alternance des pas dans le CBL"
+  },
+  {
+   "n": "50",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Sortie 1er pas dans la rotation du CBL",
+   "affiche": "[DÉBUTANT] Sortie 1er pas dans la rotation du CBL"
+  },
+  {
+   "n": "51",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser la marche pendant tout le CBL",
+   "affiche": "[DÉBUTANT] Stabiliser la marche pendant tout le CBL"
+  },
+  {
+   "n": "52",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : marche pendant le CBL",
+   "affiche": "[DÉBUTANT] Révision : marche pendant le CBL"
+  },
+  {
+   "n": "53",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Sortie 2ème pas dans l'Open Break",
+   "affiche": "[DÉBUTANT] Sortie 2ème pas dans l'Open Break"
+  },
+  {
+   "n": "54",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Transfert rapide (1/2 temps) sur la Cape",
+   "affiche": "[DÉBUTANT] Transfert rapide (1/2 temps) sur la Cape"
+  },
+  {
+   "n": "55",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser les transferts rapides sur le Papillon",
+   "affiche": "[DÉBUTANT] Stabiliser les transferts rapides sur le Papillon"
+  },
+  {
+   "n": "56",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan trimestre : transferts de poids",
+   "affiche": "[DÉBUTANT] Bilan trimestre : transferts de poids"
+  },
+  {
+   "n": "57",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Travailler l'appui long (cinématique bas → haut)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Travailler l'appui long (cinématique bas → haut)"
+  },
+  {
+   "n": "58",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Introduire le contrepoids dans les figures d'ouverture",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Introduire le contrepoids dans les figures d'ouverture"
+  },
+  {
+   "n": "59",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser appui long et contrepoids",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Stabiliser appui long et contrepoids"
+  },
+  {
+   "n": "60",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : appui long et contrepoids",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : appui long et contrepoids"
+  },
+  {
+   "n": "61",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respecter la marche complète sur la Boucle",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respecter la marche complète sur la Boucle"
+  },
+  {
+   "n": "62",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser les appuis pendant le guidage élastique",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Stabiliser les appuis pendant le guidage élastique"
+  },
+  {
+   "n": "63",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Enchaîner les appuis sur Open Break + Boucle",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Enchaîner les appuis sur Open Break + Boucle"
+  },
+  {
+   "n": "64",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : marche sur l'enchaînement",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : marche sur l'enchaînement"
+  },
+  {
+   "n": "65",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Sortie de pas avant le tour Alternating",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Sortie de pas avant le tour Alternating"
+  },
+  {
+   "n": "66",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser les appuis pendant le tour Présentation",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Stabiliser les appuis pendant le tour Présentation"
+  },
+  {
+   "n": "67",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Appuis + 1ers effets de style (piqué, retiré)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Appuis + 1ers effets de style (piqué, retiré)"
+  },
+  {
+   "n": "68",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan mi-parcours : appuis sur les tours",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : appuis sur les tours"
+  },
+  {
+   "n": "69",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Consolider les appuis sur tout le répertoire",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Consolider les appuis sur tout le répertoire"
+  },
+  {
+   "n": "70",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser les appuis sur les breaks",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Stabiliser les appuis sur les breaks"
+  },
+  {
+   "n": "71",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser les appuis sur la clave",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Stabiliser les appuis sur la clave"
+  },
+  {
+   "n": "72",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : appuis consolidés",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : appuis consolidés"
+  },
+  {
+   "n": "73",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Appuis en improvisation guidée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Appuis en improvisation guidée"
+  },
+  {
+   "n": "74",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Spot renforcé en préparation du double tour",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Spot renforcé en préparation du double tour"
+  },
+  {
+   "n": "75",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Appuis stables sur enchaînement personnel",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Appuis stables sur enchaînement personnel"
+  },
+  {
+   "n": "76",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : appuis en créativité",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : appuis en créativité"
+  },
+  {
+   "n": "77",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Choisir les transitions d'appuis de la routine",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Choisir les transitions d'appuis de la routine"
+  },
+  {
+   "n": "78",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Fluidité des appuis sur la routine complète",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Fluidité des appuis sur la routine complète"
+  },
+  {
+   "n": "79",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Appuis stables à tempo croissant",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Appuis stables à tempo croissant"
+  },
+  {
+   "n": "80",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Évaluation finale : appuis maîtrisés",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : appuis maîtrisés"
+  },
+  {
+   "n": "81",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Poser le cadre (posture à deux), connexion visuelle",
+   "affiche": "[INITIATION] Poser le cadre (posture à deux), connexion visuelle"
+  },
+  {
+   "n": "82",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Installer la connexion main-à-main légère, sans crispation",
+   "affiche": "[INITIATION] Installer la connexion main-à-main légère, sans crispation"
+  },
+  {
+   "n": "83",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Tenir la connexion sur des déplacements simples",
+   "affiche": "[INITIATION] Tenir la connexion sur des déplacements simples"
+  },
+  {
+   "n": "84",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : stabilité du cadre et de la connexion",
+   "affiche": "[INITIATION] Révision : stabilité du cadre et de la connexion"
+  },
+  {
+   "n": "85",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Installer la position fermée (cadre bras)",
+   "affiche": "[DÉBUTANT] Installer la position fermée (cadre bras)"
+  },
+  {
+   "n": "86",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion visuelle + guidage corporel simple par le Leader",
+   "affiche": "[DÉBUTANT] Connexion visuelle + guidage corporel simple par le Leader"
+  },
+  {
+   "n": "87",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Tenue systématique des bras en position fermée",
+   "affiche": "[DÉBUTANT] Tenue systématique des bras en position fermée"
+  },
+  {
+   "n": "88",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : position fermée stable",
+   "affiche": "[DÉBUTANT] Révision : position fermée stable"
+  },
+  {
+   "n": "89",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Tenue systématique des bras (Main D - Main G)",
+   "affiche": "[DÉBUTANT] Tenue systématique des bras (Main D - Main G)"
+  },
+  {
+   "n": "90",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion visuelle pendant la rotation",
+   "affiche": "[DÉBUTANT] Connexion visuelle pendant la rotation"
+  },
+  {
+   "n": "91",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Guidage aux épaules dans le CBL",
+   "affiche": "[DÉBUTANT] Guidage aux épaules dans le CBL"
+  },
+  {
+   "n": "92",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : tenue des bras et guidage",
+   "affiche": "[DÉBUTANT] Révision : tenue des bras et guidage"
+  },
+  {
+   "n": "93",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Position bonjour main G/D, guidage en opposition",
+   "affiche": "[DÉBUTANT] Position bonjour main G/D, guidage en opposition"
+  },
+  {
+   "n": "94",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion main-à-main en position miroir",
+   "affiche": "[DÉBUTANT] Connexion main-à-main en position miroir"
+  },
+  {
+   "n": "95",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Guidage en opposition stabilisé (ressort simple)",
+   "affiche": "[DÉBUTANT] Guidage en opposition stabilisé (ressort simple)"
+  },
+  {
+   "n": "96",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan trimestre : guidage en opposition",
+   "affiche": "[DÉBUTANT] Bilan trimestre : guidage en opposition"
+  },
+  {
+   "n": "97",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion renforcée pendant l'appui long",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Connexion renforcée pendant l'appui long"
+  },
+  {
+   "n": "98",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Élasticité du guidage (ressort + attraction directe)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Élasticité du guidage (ressort + attraction directe)"
+  },
+  {
+   "n": "99",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser l'élasticité du guidage",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Stabiliser l'élasticité du guidage"
+  },
+  {
+   "n": "100",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : élasticité du guidage",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : élasticité du guidage"
+  },
+  {
+   "n": "101",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Double opposition simplifiée (cadre de la Boucle)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Double opposition simplifiée (cadre de la Boucle)"
+  },
+  {
+   "n": "102",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Élasticité du guidage en enchaînement",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Élasticité du guidage en enchaînement"
+  },
+  {
+   "n": "103",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Stabiliser l'enchaînement de guidages",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Stabiliser l'enchaînement de guidages"
+  },
+  {
+   "n": "104",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : double opposition",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : double opposition"
+  },
+  {
+   "n": "105",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Guidage + préparation du spot sur le tour Alternating",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Guidage + préparation du spot sur le tour Alternating"
+  },
+  {
+   "n": "106",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion pendant le tour cache-cache",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Connexion pendant le tour cache-cache"
+  },
+  {
+   "n": "107",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Guidage stabilisé avec style",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Guidage stabilisé avec style"
+  },
+  {
+   "n": "108",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan mi-parcours : guidage sur les tours",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : guidage sur les tours"
+  },
+  {
+   "n": "109",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Consolider le cadre sur tout le répertoire",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Consolider le cadre sur tout le répertoire"
+  },
+  {
+   "n": "110",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion pendant les breaks musicaux",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Connexion pendant les breaks musicaux"
+  },
+  {
+   "n": "111",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion pendant le jeu sur la clave",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Connexion pendant le jeu sur la clave"
+  },
+  {
+   "n": "112",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : connexion consolidée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : connexion consolidée"
+  },
+  {
+   "n": "113",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion en improvisation guidée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Connexion en improvisation guidée"
+  },
+  {
+   "n": "114",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion pendant la préparation du double tour",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Connexion pendant la préparation du double tour"
+  },
+  {
+   "n": "115",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Connexion stable sur enchaînement personnel",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Connexion stable sur enchaînement personnel"
+  },
+  {
+   "n": "116",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : connexion en créativité",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : connexion en créativité"
+  },
+  {
+   "n": "117",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Construire le cadre de la routine",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Construire le cadre de la routine"
+  },
+  {
+   "n": "118",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Tenue du cadre sur la routine complète",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Tenue du cadre sur la routine complète"
+  },
+  {
+   "n": "119",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Cadre stable à tempo croissant",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Cadre stable à tempo croissant"
+  },
+  {
+   "n": "120",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Évaluation finale : connexion maîtrisée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : connexion maîtrisée"
+  },
+  {
+   "n": "121",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Sourire, relâcher les épaules",
+   "affiche": "[INITIATION] Sourire, relâcher les épaules"
+  },
+  {
+   "n": "122",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration libre accompagnant le mouvement",
+   "affiche": "[INITIATION] Respiration libre accompagnant le mouvement"
+  },
+  {
+   "n": "123",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Sourire + respiration 2 temps sur le pas de base",
+   "affiche": "[INITIATION] Sourire + respiration 2 temps sur le pas de base"
+  },
+  {
+   "n": "124",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "INITIATION",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : sourire et respiration en couple",
+   "affiche": "[INITIATION] Révision : sourire et respiration en couple"
+  },
+  {
+   "n": "125",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration 2 temps sur le pas de Mambo",
+   "affiche": "[DÉBUTANT] Respiration 2 temps sur le pas de Mambo"
+  },
+  {
+   "n": "126",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration accordée au Leader",
+   "affiche": "[DÉBUTANT] Respiration accordée au Leader"
+  },
+  {
+   "n": "127",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur l'enchaînement",
+   "affiche": "[DÉBUTANT] Respiration stable sur l'enchaînement"
+  },
+  {
+   "n": "128",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : respiration en couple sur le Mambo",
+   "affiche": "[DÉBUTANT] Révision : respiration en couple sur le Mambo"
+  },
+  {
+   "n": "129",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur le passage du CBL",
+   "affiche": "[DÉBUTANT] Respiration sur le passage du CBL"
+  },
+  {
+   "n": "130",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration liée au relâchement pendant la rotation",
+   "affiche": "[DÉBUTANT] Respiration liée au relâchement pendant la rotation"
+  },
+  {
+   "n": "131",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur l'enchaînement CBL",
+   "affiche": "[DÉBUTANT] Respiration stable sur l'enchaînement CBL"
+  },
+  {
+   "n": "132",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : respiration sur le CBL",
+   "affiche": "[DÉBUTANT] Révision : respiration sur le CBL"
+  },
+  {
+   "n": "133",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur le ressort d'ouverture",
+   "affiche": "[DÉBUTANT] Respiration sur le ressort d'ouverture"
+  },
+  {
+   "n": "134",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration accompagnant la Cape",
+   "affiche": "[DÉBUTANT] Respiration accompagnant la Cape"
+  },
+  {
+   "n": "135",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur le Papillon",
+   "affiche": "[DÉBUTANT] Respiration stable sur le Papillon"
+  },
+  {
+   "n": "136",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan trimestre : respiration sur l'Open Break",
+   "affiche": "[DÉBUTANT] Bilan trimestre : respiration sur l'Open Break"
+  },
+  {
+   "n": "137",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration liée à l'ancrage au sol",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration liée à l'ancrage au sol"
+  },
+  {
+   "n": "138",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur le contrepoids",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration sur le contrepoids"
+  },
+  {
+   "n": "139",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur figures enrichies",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration stable sur figures enrichies"
+  },
+  {
+   "n": "140",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : respiration et ancrage",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : respiration et ancrage"
+  },
+  {
+   "n": "141",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur la Boucle",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration sur la Boucle"
+  },
+  {
+   "n": "142",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration liée à l'élasticité du guidage",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration liée à l'élasticité du guidage"
+  },
+  {
+   "n": "143",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur l'enchaînement complet",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration stable sur l'enchaînement complet"
+  },
+  {
+   "n": "144",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : respiration sur l'enchaînement",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Révision : respiration sur l'enchaînement"
+  },
+  {
+   "n": "145",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur le tour",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration sur le tour"
+  },
+  {
+   "n": "146",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration liée au spot",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration liée au spot"
+  },
+  {
+   "n": "147",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable avec style",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Respiration stable avec style"
+  },
+  {
+   "n": "148",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Bilan mi-parcours : respiration sur les tours",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : respiration sur les tours"
+  },
+  {
+   "n": "149",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur tout le répertoire",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration stable sur tout le répertoire"
+  },
+  {
+   "n": "150",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur les breaks",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration sur les breaks"
+  },
+  {
+   "n": "151",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur la clave",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration sur la clave"
+  },
+  {
+   "n": "152",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : respiration consolidée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : respiration consolidée"
+  },
+  {
+   "n": "153",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration en improvisation",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration en improvisation"
+  },
+  {
+   "n": "154",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur la préparation du double tour",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration sur la préparation du double tour"
+  },
+  {
+   "n": "155",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur enchaînement personnel",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration stable sur enchaînement personnel"
+  },
+  {
+   "n": "156",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Révision : respiration en créativité",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Révision : respiration en créativité"
+  },
+  {
+   "n": "157",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration sur la construction de la routine",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration sur la construction de la routine"
+  },
+  {
+   "n": "158",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration stable sur la routine complète",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration stable sur la routine complète"
+  },
+  {
+   "n": "159",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration + énergie scénique à tempo croissant",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration + énergie scénique à tempo croissant"
+  },
+  {
+   "n": "160",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Évaluation finale : respiration maîtrisée",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : respiration maîtrisée"
+  },
+  {
+   "n": "161",
+   "code": "F1",
+   "fondamental": "MUSICALITÉ",
+   "niveau": "DÉBUTANT",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Reconnaître le début du cycle musical (8 temps)",
+   "affiche": "[DÉBUTANT] Reconnaître le début du cycle musical (8 temps)"
+  },
+  {
+   "n": "162",
+   "code": "F2",
+   "fondamental": "APPUIS",
+   "niveau": "DÉBUTANT CONFIRMÉ 1",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Sortie 3ème pas sur figure ouverte",
+   "affiche": "[DÉBUTANT CONFIRMÉ 1] Sortie 3ème pas sur figure ouverte"
+  },
+  {
+   "n": "163",
+   "code": "F3",
+   "fondamental": "CONNEXION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Guidage aux hanches (variante)",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Guidage aux hanches (variante)"
+  },
+  {
+   "n": "164",
+   "code": "F4",
+   "fondamental": "RESPIRATION",
+   "niveau": "DÉBUTANT CONFIRMÉ 2",
+   "discipline": "Mambo",
+   "typeCours": "Couple",
+   "libelle": "Respiration liée à l'énergie scénique",
+   "affiche": "[DÉBUTANT CONFIRMÉ 2] Respiration liée à l'énergie scénique"
+  }
+ ],
+ "supports": [
+  {
+   "n": "1",
+   "famille": "Déplacement rythmique",
+   "figure": "Marche de base à deux",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Sortie 1er pas",
+   "bras": "Main G - Main D",
+   "croise": "",
+   "tours": "",
+   "style": "Déhanché",
+   "niveau": "Initiation",
+   "resultat": "Marche de base à deux — Timing : Palladium (2-3-4/6-7-8) — Sortie 1er pas — Main G - Main D — Style : Déhanché"
+  },
+  {
+   "n": "2",
+   "famille": "Ballade",
+   "figure": "Ballade en couple",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Sortie 2ème pas",
+   "bras": "Main G - Main G",
+   "croise": "",
+   "tours": "",
+   "style": "Vague / Ripple",
+   "niveau": "Initiation",
+   "resultat": "Ballade en couple — Timing : Palladium (2-3-4/6-7-8) — Sortie 2ème pas — Main G - Main G — Style : Vague / Ripple"
+  },
+  {
+   "n": "3",
+   "famille": "Ballade",
+   "figure": "Ballade – variations de direction",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "Croisé avant",
+   "tours": "",
+   "style": "",
+   "niveau": "Initiation",
+   "resultat": "Ballade – variations de direction — Timing : Palladium (2-3-4/6-7-8) — Croisé avant"
+  },
+  {
+   "n": "4",
+   "famille": "Va-et-vient / Mambo",
+   "figure": "Mambo – pas de base (position fermée)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Sortie 1er pas",
+   "bras": "Position fermée",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Mambo – pas de base (position fermée) — Timing : Palladium (2-3-4/6-7-8) — Sortie 1er pas — Position fermée"
+  },
+  {
+   "n": "5",
+   "famille": "Va-et-vient / Mambo",
+   "figure": "Mambo – guidage de base (Leader)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Position du corps, sans contact",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Mambo – guidage de base (Leader) — Timing : Palladium (2-3-4/6-7-8) — Position du corps, sans contact"
+  },
+  {
+   "n": "6",
+   "famille": "Ballade",
+   "figure": "Ballade Présentation – BAv/BAr",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Sortie 1er pas",
+   "bras": "Main D - Main D",
+   "croise": "Croisé avant",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Ballade Présentation – BAv/BAr — Timing : Palladium (2-3-4/6-7-8) — Sortie 1er pas — Main D - Main D — Croisé avant"
+  },
+  {
+   "n": "7",
+   "famille": "Cross Body Lead",
+   "figure": "Cross Body Lead – CBL de base",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Main D - Main G",
+   "croise": "",
+   "tours": "1/4 tour",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Cross Body Lead – CBL de base — Timing : Palladium (2-3-4/6-7-8) — Main D - Main G — 1/4 tour"
+  },
+  {
+   "n": "8",
+   "famille": "Cross Body Lead",
+   "figure": "Cross Body Lead – tenue des bras",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Main D - Main D",
+   "croise": "",
+   "tours": "",
+   "style": "Guidage aux épaules",
+   "niveau": "Débutant",
+   "resultat": "Cross Body Lead – tenue des bras — Timing : Palladium (2-3-4/6-7-8) — Main D - Main D — Style : Guidage aux épaules"
+  },
+  {
+   "n": "9",
+   "famille": "Cross Body Lead",
+   "figure": "Cross Body Lead – CBL Présentation",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Indication visuelle",
+   "croise": "",
+   "tours": "1/2 tour",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Cross Body Lead – CBL Présentation — Timing : Palladium (2-3-4/6-7-8) — Indication visuelle — 1/2 tour"
+  },
+  {
+   "n": "10",
+   "famille": "Guidage Open Break",
+   "figure": "Guidage Open Break – OBST",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Transfert rapide (1/2 temps)",
+   "bras": "Position bonjour Main G/D",
+   "croise": "",
+   "tours": "",
+   "style": "relâché tête",
+   "niveau": "Débutant",
+   "resultat": "Guidage Open Break – OBST — Timing : Palladium (2-3-4/6-7-8) — Transfert rapide (1/2 temps) — Position bonjour Main G/D — Style : relâché tête"
+  },
+  {
+   "n": "11",
+   "famille": "Guidage Open Break",
+   "figure": "Guidage Open Break – Cape",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Position Miroir",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Guidage Open Break – Cape — Timing : Palladium (2-3-4/6-7-8) — Position Miroir"
+  },
+  {
+   "n": "12",
+   "famille": "Guidage Open Break",
+   "figure": "Guidage Open Break – Papillon",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Transfert rapide (1/2 temps)",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant",
+   "resultat": "Guidage Open Break – Papillon — Timing : Palladium (2-3-4/6-7-8) — Transfert rapide (1/2 temps)"
+  },
+  {
+   "n": "13",
+   "famille": "Guidage Open Break",
+   "figure": "Guidage Open Break – OBST (appui long)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Appui long",
+   "bras": "Position bonjour Main G/D",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Guidage Open Break – OBST (appui long) — Timing : Palladium (2-3-4/6-7-8) — Appui long — Position bonjour Main G/D"
+  },
+  {
+   "n": "14",
+   "famille": "Guidage Open Break",
+   "figure": "Guidage Open Break – Cape/Papillon (contrepoids)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "Contrepoids",
+   "bras": "Position Miroir",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Guidage Open Break – Cape/Papillon (contrepoids) — Timing : Palladium (2-3-4/6-7-8) — Contrepoids — Position Miroir"
+  },
+  {
+   "n": "15",
+   "famille": "Guidage Open Break",
+   "figure": "Guidage Open Break – timing Palladium varié",
+   "timing": "Palladium (2-3-4/6-7-8) varié",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Guidage Open Break – timing Palladium varié — Timing : Palladium (2-3-4/6-7-8) varié"
+  },
+  {
+   "n": "16",
+   "famille": "Double opposition",
+   "figure": "Double opposition – la Boucle",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Main G-G / Main D-G, Main G dessus",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Double opposition – la Boucle — Timing : Palladium (2-3-4/6-7-8) — Main G-G / Main D-G, Main G dessus"
+  },
+  {
+   "n": "17",
+   "famille": "Double opposition",
+   "figure": "Double opposition – Boucle (ressort/attraction)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "Main G-G / Main D-G, Main D dessus",
+   "croise": "",
+   "tours": "",
+   "style": "Tornado intérieur/extérieur",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Double opposition – Boucle (ressort/attraction) — Timing : Palladium (2-3-4/6-7-8) — Main G-G / Main D-G, Main D dessus — Style : Tornado intérieur/extérieur"
+  },
+  {
+   "n": "18",
+   "famille": "Double opposition",
+   "figure": "Enchaînement Open Break + Boucle",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Enchaînement Open Break + Boucle — Timing : Palladium (2-3-4/6-7-8)"
+  },
+  {
+   "n": "19",
+   "famille": "Tours",
+   "figure": "Tours simples – Alternating",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "1/4 tour",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Tours simples – Alternating — Timing : Palladium (2-3-4/6-7-8) — 1/4 tour"
+  },
+  {
+   "n": "20",
+   "famille": "Tours",
+   "figure": "Tours simples – Présentation / cache-cache",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "1/2 tour",
+   "style": "",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Tours simples – Présentation / cache-cache — Timing : Palladium (2-3-4/6-7-8) — 1/2 tour"
+  },
+  {
+   "n": "21",
+   "famille": "Tours",
+   "figure": "Tours + 1ers effets de style",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "1/2 tour",
+   "style": "Piqué / Retiré / Kick",
+   "niveau": "Débutant Confirmé 1",
+   "resultat": "Tours + 1ers effets de style — Timing : Palladium (2-3-4/6-7-8) — 1/2 tour — Style : Piqué / Retiré / Kick"
+  },
+  {
+   "n": "22",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Répertoire complet (Mambo, CBL, Open Break, Tours)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Répertoire complet (Mambo, CBL, Open Break, Tours) — Timing : Palladium (2-3-4/6-7-8)"
+  },
+  {
+   "n": "23",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Répertoire + breaks musicaux",
+   "timing": "Palladium (breaks marqués)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Répertoire + breaks musicaux — Timing : Palladium (breaks marqués)"
+  },
+  {
+   "n": "24",
+   "famille": "Va-et-vient / Mambo",
+   "figure": "Répertoire + clave",
+   "timing": "Palladium (clave)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Répertoire + clave — Timing : Palladium (clave)"
+  },
+  {
+   "n": "25",
+   "famille": "Double opposition",
+   "figure": "Variante créative en couple (famille Suzy Q)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "Twist",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Variante créative en couple (famille Suzy Q) — Timing : Palladium (2-3-4/6-7-8) — Style : Twist"
+  },
+  {
+   "n": "26",
+   "famille": "Tours",
+   "figure": "Prémices du double tour",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "Double tour (préparation)",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Prémices du double tour — Timing : Palladium (2-3-4/6-7-8) — Double tour (préparation)"
+  },
+  {
+   "n": "27",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Enchaînement créatif personnel",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Enchaînement créatif personnel — Timing : Palladium (2-3-4/6-7-8)"
+  },
+  {
+   "n": "28",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Construction de la routine finale",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Construction de la routine finale — Timing : Palladium (2-3-4/6-7-8)"
+  },
+  {
+   "n": "29",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Répétition de la routine",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Répétition de la routine — Timing : Palladium (2-3-4/6-7-8)"
+  },
+  {
+   "n": "30",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Routine à tempo croissant",
+   "timing": "Palladium (accéléré)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Routine à tempo croissant — Timing : Palladium (accéléré)"
+  },
+  {
+   "n": "31",
+   "famille": "Déplacement / tours contrariés",
+   "figure": "Restitution finale (spectacle)",
+   "timing": "Palladium (2-3-4/6-7-8)",
+   "sortie": "",
+   "bras": "",
+   "croise": "",
+   "tours": "",
+   "style": "",
+   "niveau": "Débutant Confirmé 2",
+   "resultat": "Restitution finale (spectacle) — Timing : Palladium (2-3-4/6-7-8)"
+  }
+ ],
+ "outils": [
+  {
+   "n": "1",
+   "libelle": "Démonstration miroir"
+  },
+  {
+   "n": "2",
+   "libelle": "Contre-démonstration"
+  },
+  {
+   "n": "3",
+   "libelle": "Décomposition pas à pas"
+  },
+  {
+   "n": "4",
+   "libelle": "Décomposition sans musique"
+  },
+  {
+   "n": "5",
+   "libelle": "Marquage au sol"
+  },
+  {
+   "n": "6",
+   "libelle": "Exercice guidé / aveugle (Co-leader)"
+  },
+  {
+   "n": "7",
+   "libelle": "Exercice de spot"
+  },
+  {
+   "n": "8",
+   "libelle": "Rotation des partenaires"
+  },
+  {
+   "n": "9",
+   "libelle": "Répétition en cercle"
+  },
+  {
+   "n": "10",
+   "libelle": "Répétition en ligne"
+  },
+  {
+   "n": "11",
+   "libelle": "Répétition en sous-groupes"
+  },
+  {
+   "n": "12",
+   "libelle": "Répétitions successives"
+  },
+  {
+   "n": "13",
+   "libelle": "Comptage à voix haute"
+  },
+  {
+   "n": "14",
+   "libelle": "Musique tempo réduit"
+  },
+  {
+   "n": "15",
+   "libelle": "Musique très lente"
+  },
+  {
+   "n": "16",
+   "libelle": "Musique standard"
+  },
+  {
+   "n": "17",
+   "libelle": "Musique à tempo croissant"
+  },
+  {
+   "n": "18",
+   "libelle": "Feedback individualisé"
+  },
+  {
+   "n": "19",
+   "libelle": "Feedback croisé élève/élève"
+  },
+  {
+   "n": "20",
+   "libelle": "Feedback collectif"
+  },
+  {
+   "n": "21",
+   "libelle": "Auto-évaluation"
+  },
+  {
+   "n": "22",
+   "libelle": "Captation vidéo"
+  },
+  {
+   "n": "23",
+   "libelle": "Jeu / Ludique"
+  },
+  {
+   "n": "24",
+   "libelle": "Improvisation guidée"
+  },
+  {
+   "n": "25",
+   "libelle": "Travail en autonomie par couple"
+  },
+  {
+   "n": "26",
+   "libelle": "Travail collectif de construction"
+  },
+  {
+   "n": "27",
+   "libelle": "Circuit training de figures"
+  },
+  {
+   "n": "28",
+   "libelle": "Écoute active"
+  },
+  {
+   "n": "29",
+   "libelle": "Exercice de style en solo (miroir)"
+  },
+  {
+   "n": "30",
+   "libelle": "Exercice de résistance / élasticité en binôme"
+  },
+  {
+   "n": "31",
+   "libelle": "Percussion corporelle"
+  },
+  {
+   "n": "32",
+   "libelle": "Grille d'observation"
+  },
+  {
+   "n": "33",
+   "libelle": "Passage par couples / binômes"
+  }
+ ],
+ "ficheModele": {
+  "titre": "FICHE DE PROGRAMMATION ANNUELLE — SALSABOR",
+  "sousTitre": "Discipline : MAMBO  |  Type de cours : COUPLE  |  Cycle : DÉBUTANT (Initiation → Débutant Confirmé 2)  |  Timing retenu : PALLADIUM (2-3-4 / 6-7-8)  |  40 semaines / 10 mois",
+  "professeur": "",
+  "discipline": "Mambo",
+  "typeCours": "Couple",
+  "cycle": "Débutant",
+  "annee": "2026-2027",
+  "maj": "29/08/2026",
+  "mois": [
+   "Septembre",
+   "Octobre",
+   "Novembre",
+   "Décembre",
+   "Janvier",
+   "Février",
+   "Mars",
+   "Avril",
+   "Mai",
+   "Juin"
+  ],
+  "sousNiveaux": [
+   "INITIATION",
+   "DÉBUTANT",
+   "DÉBUTANT",
+   "DÉBUTANT",
+   "DÉBUTANT CONFIRMÉ 1",
+   "DÉBUTANT CONFIRMÉ 1",
+   "DÉBUTANT CONFIRMÉ 1",
+   "DÉBUTANT CONFIRMÉ 2",
+   "DÉBUTANT CONFIRMÉ 2",
+   "DÉBUTANT CONFIRMÉ 2"
+  ],
+  "objectifsPrioritaires": [
+   "1) Poser la posture à deux (cadre) et la connexion de base\n2) Susciter l'envie de danser en couple",
+   "1) Fixer la position fermée et le timing Palladium sur le Mambo\n2) Autonomie sur la base rythmique",
+   "1) Introduire le Cross Body Lead (CBL)\n2) Tenue systématique des bras",
+   "1) Introduire l'Open Break (guidage en opposition) : OBST, Cape, Papillon\n2) Bilan de trimestre",
+   "1) Renforcer l'appui long et le contrepoids\n2) Jouer avec le timing Palladium",
+   "1) Introduire la Boucle (double opposition)\n2) Élasticité du guidage",
+   "1) Introduire les tours simples\n2) 1ers effets de style féminins",
+   "1) Consolider les fondamentaux sur le répertoire complet\n2) Passer du timing Palladium à la musicalité",
+   "1) Compléments créatifs (famille Suzy Q transférée au couple)\n2) Prémices du double tour",
+   "1) Finaliser une routine longue intégrant les acquis de l'année\n2) Challenge sur les tempos"
+  ],
+  "cellules": {
+   "0|S1": {
+    "F1": "[INITIATION] Marquer la pulsation en timing Palladium (2-3-4 / 6-7-8), en accompagné",
+    "F2": "[INITIATION] Aligner les appuis de base, en miroir avec le partenaire",
+    "F3": "[INITIATION] Poser le cadre (posture à deux), connexion visuelle",
+    "F4": "[INITIATION] Sourire, relâcher les épaules",
+    "F5": "Marche de base à deux — Timing : Palladium (2-3-4/6-7-8) — Sortie 1er pas — Main G - Main D — Style : Déhanché",
+    "O1": "Démonstration miroir",
+    "O2": "Comptage à voix haute",
+    "O3": "Musique très lente",
+    "realise": ""
+   },
+   "1|S1": {
+    "F1": "[DÉBUTANT] Marquer le timing Palladium (2-3-4 / 6-7-8) sur le pas de Mambo",
+    "F2": "[DÉBUTANT] Respecter la marche (alternance + poids) en position fermée",
+    "F3": "[DÉBUTANT] Installer la position fermée (cadre bras)",
+    "F4": "[DÉBUTANT] Respiration 2 temps sur le pas de Mambo",
+    "F5": "Mambo – pas de base (position fermée) — Timing : Palladium (2-3-4/6-7-8) — Sortie 1er pas — Position fermée",
+    "O1": "Décomposition pas à pas",
+    "O2": "Comptage à voix haute",
+    "O3": "Musique tempo réduit",
+    "realise": ""
+   },
+   "2|S1": {
+    "F1": "[DÉBUTANT] Marquer le timing Palladium sur le Cross Body Lead",
+    "F2": "[DÉBUTANT] Respecter l'alternance des pas dans le CBL",
+    "F3": "[DÉBUTANT] Tenue systématique des bras (Main D - Main G)",
+    "F4": "[DÉBUTANT] Respiration sur le passage du CBL",
+    "F5": "Cross Body Lead – CBL de base — Timing : Palladium (2-3-4/6-7-8) — Main D - Main G — 1/4 tour",
+    "O1": "Décomposition sans musique",
+    "O2": "Marquage au sol",
+    "O3": "Musique très lente",
+    "realise": ""
+   },
+   "3|S1": {
+    "F1": "[DÉBUTANT] Marquer le timing Palladium sur l'Open Break",
+    "F2": "[DÉBUTANT] Sortie 2ème pas dans l'Open Break",
+    "F3": "[DÉBUTANT] Position bonjour main G/D, guidage en opposition",
+    "F4": "[DÉBUTANT] Respiration sur le ressort d'ouverture",
+    "F5": "Guidage Open Break – OBST — Timing : Palladium (2-3-4/6-7-8) — Transfert rapide (1/2 temps) — Position bonjour Main G/D — Style : relâché tête",
+    "O1": "Décomposition pas à pas",
+    "O2": "Musique très lente",
+    "O3": "Marquage au sol",
+    "realise": ""
+   },
+   "4|S1": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Jouer avec le timing Palladium (variations de placement)",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Travailler l'appui long (cinématique bas → haut)",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Connexion renforcée pendant l'appui long",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration liée à l'ancrage au sol",
+    "F5": "Guidage Open Break – OBST (appui long) — Timing : Palladium (2-3-4/6-7-8) — Appui long — Position bonjour Main G/D",
+    "O1": "Marquage au sol",
+    "O2": "Musique tempo réduit",
+    "O3": "Musique standard",
+    "realise": ""
+   },
+   "5|S1": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Marquer le timing Palladium sur la Boucle",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Respecter la marche complète sur la Boucle",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Double opposition simplifiée (cadre de la Boucle)",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration sur la Boucle",
+    "F5": "Double opposition – la Boucle — Timing : Palladium (2-3-4/6-7-8) — Main G-G / Main D-G, Main G dessus",
+    "O1": "Décomposition sans musique",
+    "O2": "Marquage au sol",
+    "O3": "Musique très lente",
+    "realise": ""
+   },
+   "6|S1": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Timing Palladium sur les tours (préparation du spot)",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Sortie de pas avant le tour Alternating",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Guidage + préparation du spot sur le tour Alternating",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration sur le tour",
+    "F5": "Tours simples – Alternating — Timing : Palladium (2-3-4/6-7-8) — 1/4 tour",
+    "O1": "Exercice de spot",
+    "O2": "Musique très lente",
+    "O3": "Travail en autonomie par couple",
+    "realise": ""
+   },
+   "7|S1": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Consolider le timing Palladium sur tout le répertoire",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Consolider les appuis sur tout le répertoire",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Consolider le cadre sur tout le répertoire",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration stable sur tout le répertoire",
+    "F5": "Répertoire complet (Mambo, CBL, Open Break, Tours) — Timing : Palladium (2-3-4/6-7-8)",
+    "O1": "Circuit training de figures",
+    "O2": "Musique standard",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "8|S1": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Timing Palladium en improvisation guidée",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Appuis en improvisation guidée",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Connexion en improvisation guidée",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration en improvisation",
+    "F5": "Variante créative en couple (famille Suzy Q) — Timing : Palladium (2-3-4/6-7-8) — Style : Twist",
+    "O1": "Improvisation guidée",
+    "O2": "Musique standard",
+    "O3": "Feedback collectif",
+    "realise": ""
+   },
+   "9|S1": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Construire la trame rythmique de la routine",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Choisir les transitions d'appuis de la routine",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Construire le cadre de la routine",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration sur la construction de la routine",
+    "F5": "Construction de la routine finale — Timing : Palladium (2-3-4/6-7-8)",
+    "O1": "Travail collectif de construction",
+    "O2": "Musique standard",
+    "O3": "",
+    "realise": ""
+   },
+   "0|S2": {
+    "F1": "[INITIATION] Repérer le début de phrase musicale, en couple",
+    "F2": "[INITIATION] Respecter l'alternance des pas en couple",
+    "F3": "[INITIATION] Installer la connexion main-à-main légère, sans crispation",
+    "F4": "[INITIATION] Respiration libre accompagnant le mouvement",
+    "F5": "Ballade en couple — Timing : Palladium (2-3-4/6-7-8) — Sortie 2ème pas — Main G - Main G — Style : Vague / Ripple",
+    "O1": "Rotation des partenaires",
+    "O2": "Musique tempo réduit",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "1|S2": {
+    "F1": "[DÉBUTANT] Repérer le cycle musical de base en couple",
+    "F2": "[DÉBUTANT] Introduire la sortie 1er pas",
+    "F3": "[DÉBUTANT] Connexion visuelle + guidage corporel simple par le Leader",
+    "F4": "[DÉBUTANT] Respiration accordée au Leader",
+    "F5": "Mambo – guidage de base (Leader) — Timing : Palladium (2-3-4/6-7-8) — Position du corps, sans contact",
+    "O1": "Exercice guidé / aveugle (Co-leader)",
+    "O2": "Rotation des partenaires",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "2|S2": {
+    "F1": "[DÉBUTANT] Repérer le cycle musical pendant la rotation",
+    "F2": "[DÉBUTANT] Sortie 1er pas dans la rotation du CBL",
+    "F3": "[DÉBUTANT] Connexion visuelle pendant la rotation",
+    "F4": "[DÉBUTANT] Respiration liée au relâchement pendant la rotation",
+    "F5": "Cross Body Lead – tenue des bras — Timing : Palladium (2-3-4/6-7-8) — Main D - Main D — Style : Guidage aux épaules",
+    "O1": "Décomposition pas à pas",
+    "O2": "Feedback individualisé",
+    "O3": "Musique standard",
+    "realise": ""
+   },
+   "3|S2": {
+    "F1": "[DÉBUTANT] Repérer les temps forts pendant l'ouverture",
+    "F2": "[DÉBUTANT] Transfert rapide (1/2 temps) sur la Cape",
+    "F3": "[DÉBUTANT] Connexion main-à-main en position miroir",
+    "F4": "[DÉBUTANT] Respiration accompagnant la Cape",
+    "F5": "Guidage Open Break – Cape — Timing : Palladium (2-3-4/6-7-8) — Position Miroir",
+    "O1": "Démonstration miroir",
+    "O2": "Contre-démonstration",
+    "O3": "Comptage à voix haute",
+    "realise": ""
+   },
+   "4|S2": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Introduire le timing 2-3-4/6-7-8 avec breaks marqués",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Introduire le contrepoids dans les figures d'ouverture",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Élasticité du guidage (ressort + attraction directe)",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration sur le contrepoids",
+    "F5": "Guidage Open Break – Cape/Papillon (contrepoids) — Timing : Palladium (2-3-4/6-7-8) — Contrepoids — Position Miroir",
+    "O1": "Exercice de résistance / élasticité en binôme",
+    "O2": "Feedback individualisé",
+    "O3": "",
+    "realise": ""
+   },
+   "5|S2": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Jouer avec le rythme pendant le guidage élastique",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Stabiliser les appuis pendant le guidage élastique",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Élasticité du guidage en enchaînement",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration liée à l'élasticité du guidage",
+    "F5": "Double opposition – Boucle (ressort/attraction) — Timing : Palladium (2-3-4/6-7-8) — Main G-G / Main D-G, Main D dessus — Style : Tornado intérieur/extérieur",
+    "O1": "Exercice de résistance / élasticité en binôme",
+    "O2": "Musique standard",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "6|S2": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Repérer la musique pendant la rotation",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Stabiliser les appuis pendant le tour Présentation",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Connexion pendant le tour cache-cache",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration liée au spot",
+    "F5": "Tours simples – Présentation / cache-cache — Timing : Palladium (2-3-4/6-7-8) — 1/2 tour",
+    "O1": "Décomposition pas à pas",
+    "O2": "Rotation des partenaires",
+    "O3": "Musique standard",
+    "realise": ""
+   },
+   "7|S2": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Marquer les breaks musicaux",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Stabiliser les appuis sur les breaks",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Connexion pendant les breaks musicaux",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration sur les breaks",
+    "F5": "Répertoire + breaks musicaux — Timing : Palladium (breaks marqués)",
+    "O1": "Écoute active",
+    "O2": "Musique standard",
+    "O3": "",
+    "realise": ""
+   },
+   "8|S2": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Timing sur la préparation du double tour",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Spot renforcé en préparation du double tour",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Connexion pendant la préparation du double tour",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration sur la préparation du double tour",
+    "F5": "Prémices du double tour — Timing : Palladium (2-3-4/6-7-8) — Double tour (préparation)",
+    "O1": "Exercice de spot",
+    "O2": "Musique très lente",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "9|S2": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Stabiliser le timing sur la routine complète",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Fluidité des appuis sur la routine complète",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Tenue du cadre sur la routine complète",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration stable sur la routine complète",
+    "F5": "Répétition de la routine — Timing : Palladium (2-3-4/6-7-8)",
+    "O1": "Répétitions successives",
+    "O2": "Musique standard",
+    "O3": "",
+    "realise": ""
+   },
+   "0|S3": {
+    "F1": "[INITIATION] Marquer la pulsation en autonomie relative avec le Leader",
+    "F2": "[INITIATION] Stabiliser le transfert de poids simple",
+    "F3": "[INITIATION] Tenir la connexion sur des déplacements simples",
+    "F4": "[INITIATION] Sourire + respiration 2 temps sur le pas de base",
+    "F5": "Ballade – variations de direction — Timing : Palladium (2-3-4/6-7-8) — Croisé avant",
+    "O1": "Jeu / Ludique",
+    "O2": "Répétition en sous-groupes",
+    "O3": "Musique standard",
+    "realise": ""
+   },
+   "1|S3": {
+    "F1": "[DÉBUTANT] Marquer le timing Palladium en autonomie (couple)",
+    "F2": "[DÉBUTANT] Stabiliser la sortie 1er pas sur le Mambo",
+    "F3": "[DÉBUTANT] Tenue systématique des bras en position fermée",
+    "F4": "[DÉBUTANT] Respiration stable sur l'enchaînement",
+    "F5": "Ballade Présentation – BAv/BAr — Timing : Palladium (2-3-4/6-7-8) — Sortie 1er pas — Main D - Main D — Croisé avant",
+    "O1": "Répétition en ligne",
+    "O2": "Musique standard",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "2|S3": {
+    "F1": "[DÉBUTANT] Marquer le timing Palladium sur CBL et CBLT",
+    "F2": "[DÉBUTANT] Stabiliser la marche pendant tout le CBL",
+    "F3": "[DÉBUTANT] Guidage aux épaules dans le CBL",
+    "F4": "[DÉBUTANT] Respiration stable sur l'enchaînement CBL",
+    "F5": "Cross Body Lead – CBL Présentation — Timing : Palladium (2-3-4/6-7-8) — Indication visuelle — 1/2 tour",
+    "O1": "Rotation des partenaires",
+    "O2": "Musique standard",
+    "O3": "Feedback croisé élève/élève",
+    "realise": ""
+   },
+   "3|S3": {
+    "F1": "[DÉBUTANT] Marquer le timing Palladium sur OBST / Cape / Papillon",
+    "F2": "[DÉBUTANT] Stabiliser les transferts rapides sur le Papillon",
+    "F3": "[DÉBUTANT] Guidage en opposition stabilisé (ressort simple)",
+    "F4": "[DÉBUTANT] Respiration stable sur le Papillon",
+    "F5": "Guidage Open Break – Papillon — Timing : Palladium (2-3-4/6-7-8) — Transfert rapide (1/2 temps)",
+    "O1": "Répétition en cercle",
+    "O2": "Musique standard",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "4|S3": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Faire varier son placement sur la musique",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Stabiliser appui long et contrepoids",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Stabiliser l'élasticité du guidage",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration stable sur figures enrichies",
+    "F5": "Guidage Open Break – timing Palladium varié — Timing : Palladium (2-3-4/6-7-8) varié",
+    "O1": "Comptage à voix haute",
+    "O2": "Musique standard",
+    "O3": "Écoute active",
+    "realise": ""
+   },
+   "5|S3": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Timing Palladium stable sur Open Break + Boucle",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Enchaîner les appuis sur Open Break + Boucle",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Stabiliser l'enchaînement de guidages",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration stable sur l'enchaînement complet",
+    "F5": "Enchaînement Open Break + Boucle — Timing : Palladium (2-3-4/6-7-8)",
+    "O1": "Répétition en ligne",
+    "O2": "Musique standard",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "6|S3": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Timing Palladium stable + style associé",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Appuis + 1ers effets de style (piqué, retiré)",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Guidage stabilisé avec style",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Respiration stable avec style",
+    "F5": "Tours + 1ers effets de style — Timing : Palladium (2-3-4/6-7-8) — 1/2 tour — Style : Piqué / Retiré / Kick",
+    "O1": "Exercice de style en solo (miroir)",
+    "O2": "Musique standard",
+    "O3": "",
+    "realise": ""
+   },
+   "7|S3": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Marquer la clave dans le Mambo",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Stabiliser les appuis sur la clave",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Connexion pendant le jeu sur la clave",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration sur la clave",
+    "F5": "Répertoire + clave — Timing : Palladium (clave)",
+    "O1": "Percussion corporelle",
+    "O2": "Écoute active",
+    "O3": "Musique standard",
+    "realise": ""
+   },
+   "8|S3": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Timing stable sur enchaînement personnel",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Appuis stables sur enchaînement personnel",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Connexion stable sur enchaînement personnel",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration stable sur enchaînement personnel",
+    "F5": "Enchaînement créatif personnel — Timing : Palladium (2-3-4/6-7-8)",
+    "O1": "Travail en autonomie par couple",
+    "O2": "Musique standard",
+    "O3": "Feedback individualisé",
+    "realise": ""
+   },
+   "9|S3": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Timing Palladium à tempo croissant",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Appuis stables à tempo croissant",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Cadre stable à tempo croissant",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Respiration + énergie scénique à tempo croissant",
+    "F5": "Routine à tempo croissant — Timing : Palladium (accéléré)",
+    "O1": "Musique à tempo croissant",
+    "O2": "Captation vidéo",
+    "O3": "",
+    "realise": ""
+   },
+   "0|S4": {
+    "F1": "[INITIATION] Révision : stabilité de la pulsation Palladium en couple",
+    "F2": "[INITIATION] Révision : alternance des pas et transfert de poids",
+    "F3": "[INITIATION] Révision : stabilité du cadre et de la connexion",
+    "F4": "[INITIATION] Révision : sourire et respiration en couple",
+    "F5": "Révision : Déplacement + Ballade",
+    "O1": "Passage par couples / binômes",
+    "O2": "Grille d'observation",
+    "O3": "Feedback collectif",
+    "realise": ""
+   },
+   "1|S4": {
+    "F1": "[DÉBUTANT] Révision : timing Palladium en couple",
+    "F2": "[DÉBUTANT] Révision : marche et sortie 1er pas",
+    "F3": "[DÉBUTANT] Révision : position fermée stable",
+    "F4": "[DÉBUTANT] Révision : respiration en couple sur le Mambo",
+    "F5": "Révision : Mambo + Présentation",
+    "O1": "Passage par couples / binômes",
+    "O2": "Auto-évaluation",
+    "O3": "Démonstration miroir",
+    "realise": ""
+   },
+   "2|S4": {
+    "F1": "[DÉBUTANT] Révision : timing Palladium sur le CBL",
+    "F2": "[DÉBUTANT] Révision : marche pendant le CBL",
+    "F3": "[DÉBUTANT] Révision : tenue des bras et guidage",
+    "F4": "[DÉBUTANT] Révision : respiration sur le CBL",
+    "F5": "Révision : Cross Body Lead",
+    "O1": "Captation vidéo",
+    "O2": "Grille d'observation",
+    "O3": "Jeu / Ludique",
+    "realise": ""
+   },
+   "3|S4": {
+    "F1": "[DÉBUTANT] Bilan trimestre : timing Palladium consolidé",
+    "F2": "[DÉBUTANT] Bilan trimestre : transferts de poids",
+    "F3": "[DÉBUTANT] Bilan trimestre : guidage en opposition",
+    "F4": "[DÉBUTANT] Bilan trimestre : respiration sur l'Open Break",
+    "F5": "Bilan trimestre : Mambo + CBL + Open Break",
+    "O1": "Passage par couples / binômes",
+    "O2": "Grille d'observation",
+    "O3": "Captation vidéo",
+    "realise": ""
+   },
+   "4|S4": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Révision : jeu sur le timing Palladium",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Révision : appui long et contrepoids",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Révision : élasticité du guidage",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Révision : respiration et ancrage",
+    "F5": "Révision : Open Break enrichi",
+    "O1": "Passage par couples / binômes",
+    "O2": "Auto-évaluation",
+    "O3": "Feedback collectif",
+    "realise": ""
+   },
+   "5|S4": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Révision : timing sur l'enchaînement",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Révision : marche sur l'enchaînement",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Révision : double opposition",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Révision : respiration sur l'enchaînement",
+    "F5": "Révision : enchaînement d'ouverture",
+    "O1": "Passage par couples / binômes",
+    "O2": "Grille d'observation",
+    "O3": "",
+    "realise": ""
+   },
+   "6|S4": {
+    "F1": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : timing sur les tours",
+    "F2": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : appuis sur les tours",
+    "F3": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : guidage sur les tours",
+    "F4": "[DÉBUTANT CONFIRMÉ 1] Bilan mi-parcours : respiration sur les tours",
+    "F5": "Bilan mi-parcours : tours stylés",
+    "O1": "Passage par couples / binômes",
+    "O2": "Grille d'observation",
+    "O3": "",
+    "realise": ""
+   },
+   "7|S4": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Révision : musicalité (breaks + clave)",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Révision : appuis consolidés",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Révision : connexion consolidée",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Révision : respiration consolidée",
+    "F5": "Révision : répertoire en musicalité",
+    "O1": "Passage par couples / binômes",
+    "O2": "Grille d'observation",
+    "O3": "",
+    "realise": ""
+   },
+   "8|S4": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Révision : timing en créativité",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Révision : appuis en créativité",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Révision : connexion en créativité",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Révision : respiration en créativité",
+    "F5": "Révision : enchaînement personnel",
+    "O1": "Passage par couples / binômes",
+    "O2": "Auto-évaluation",
+    "O3": "",
+    "realise": ""
+   },
+   "9|S4": {
+    "F1": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : timing Palladium maîtrisé",
+    "F2": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : appuis maîtrisés",
+    "F3": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : connexion maîtrisée",
+    "F4": "[DÉBUTANT CONFIRMÉ 2] Évaluation finale : respiration maîtrisée",
+    "F5": "Restitution finale (spectacle) — Timing : Palladium (2-3-4/6-7-8)",
+    "O1": "Captation vidéo",
+    "O2": "Passage par couples / binômes",
+    "O3": "Grille d'observation",
+    "realise": ""
+   }
+  }
+ },
+ "champs": [
+  {
+   "code": "F1",
+   "label": "F1 – MUSICALITÉ",
+   "type": "cache",
+   "classe": "cache"
+  },
+  {
+   "code": "F2",
+   "label": "F2 – APPUIS",
+   "type": "cache",
+   "classe": "cache"
+  },
+  {
+   "code": "F3",
+   "label": "F3 – CONNEXION",
+   "type": "cache",
+   "classe": "cache"
+  },
+  {
+   "code": "F4",
+   "label": "F4 – RESPIRATION",
+   "type": "cache",
+   "classe": "cache"
+  },
+  {
+   "code": "F5",
+   "label": "F5 – SUPPORT CHORÉGR. (affiché aux élèves)",
+   "type": "affiche",
+   "classe": "affiche"
+  },
+  {
+   "code": "O1",
+   "label": "OUTIL 1",
+   "type": "outil",
+   "classe": "outil"
+  },
+  {
+   "code": "O2",
+   "label": "OUTIL 2",
+   "type": "outil",
+   "classe": "outil"
+  },
+  {
+   "code": "O3",
+   "label": "OUTIL 3",
+   "type": "outil",
+   "classe": "outil"
+  },
+  {
+   "code": "realise",
+   "label": "RÉALISÉ + Commentaires",
+   "type": "libre",
+   "classe": "realise"
+  }
+ ]
+};
+
+</script>
+<script>
+/* SALSABOR — Programmation annuelle des cours de danse
+   Application locale : aucune donnée ne sort du poste.
+   Stockage navigateur (localStorage) + sauvegarde/restauration par fichier JSON. */
+(function () {
+"use strict";
+
+const REF = window.SALSABOR_REF;
+const KEY = "salsabor.programmation.v1";
+const SEMAINES = ["S1", "S2", "S3", "S4"];
+const CHAMPS = REF.champs;
+const CHAMPS_SAISIE = CHAMPS.filter(c => c.code !== "realise");
+const JOURS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+
+/* ============================ Utilitaires ============================ */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const uid = () => "f" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function norm(s) {
+  return (s || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/\s+/g, " ").trim();
+}
+function esc(s) {
+  return (s == null ? "" : String(s)).replace(/[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+}
+function frDate(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return `${d}/${m}/${y}`;
+}
+function isoOf(dt) {
+  return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+}
+function addDays(iso, n) {
+  const d = new Date(iso + "T12:00:00");
+  d.setDate(d.getDate() + n);
+  return isoOf(d);
+}
+function todayIso() { return isoOf(new Date()); }
+
+/* Compose le libellé d'un support chorégraphique — même règle que la colonne
+   RESULTAT du classeur Excel. */
+function composeSupport(s) {
+  const parts = [s.figure];
+  if (s.timing) parts.push("Timing : " + s.timing);
+  if (s.sortie) parts.push(s.sortie);
+  if (s.bras) parts.push(s.bras);
+  if (s.croise) parts.push(s.croise);
+  if (s.tours) parts.push(s.tours);
+  if (s.style) parts.push("Style : " + s.style);
+  return parts.filter(Boolean).join(" — ");
+}
+
+/* ============================ État ============================ */
+let state = null;
+let vueCourante = "dashboard";
+
+function ficheVierge(opts) {
+  const cellules = {};
+  for (let m = 0; m < 10; m++)
+    for (const sem of SEMAINES) {
+      cellules[m + "|" + sem] = { F1:"",F2:"",F3:"",F4:"",F5:"",O1:"",O2:"",O3:"",realise:"", fait:false };
+    }
+  return {
+    id: uid(),
+    nom: opts.nom || "Nouvelle fiche",
+    professeur: opts.professeur || "",
+    discipline: opts.discipline || "Mambo",
+    typeCours: opts.typeCours || "Couple",
+    cycle: opts.cycle || "Débutant",
+    annee: opts.annee || REF.ficheModele.annee,
+    timing: opts.timing || REF.listes.timings[0] || "",
+    maj: todayIso(),
+    mois: clone(REF.ficheModele.mois),
+    sousNiveaux: opts.cycle === "Débutant"
+      ? clone(REF.ficheModele.sousNiveaux)
+      : new Array(10).fill((opts.cycle || "Débutant").toUpperCase()),
+    objectifsPrioritaires: new Array(10).fill(""),
+    cellules,
+    calendrier: { debut: "", mode: "calendrier", heure: "19:30", duree: 60, lieu: "", exclusions: [] }
+  };
+}
+
+function ficheModele(opts) {
+  const f = ficheVierge(opts);
+  const m = REF.ficheModele;
+  f.objectifsPrioritaires = clone(m.objectifsPrioritaires);
+  f.sousNiveaux = clone(m.sousNiveaux);
+  for (const k in m.cellules) {
+    f.cellules[k] = Object.assign({}, m.cellules[k], { fait: false });
+  }
+  return f;
+}
+
+function etatInitial() {
+  const f = ficheModele({
+    nom: "Mambo Couple Débutant",
+    discipline: REF.ficheModele.discipline,
+    typeCours: REF.ficheModele.typeCours,
+    cycle: REF.ficheModele.cycle,
+    annee: REF.ficheModele.annee,
+    timing: REF.listes.timings[0] || ""
+  });
+  return {
+    version: 1,
+    impression: "2pages",
+    ficheActive: f.id,
+    fiches: [f],
+    ref: {
+      objectifsCaches: clone(REF.objectifsCaches),
+      supports: clone(REF.supports),
+      outils: clone(REF.outils),
+      listes: clone(REF.listes)
+    }
+  };
+}
+
+function charger() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.fiches) && s.fiches.length) return s;
+    }
+  } catch (e) { console.warn("Lecture du stockage impossible :", e); }
+  return etatInitial();
+}
+
+let sauveTimer = null;
+function sauver(immediat) {
+  clearTimeout(sauveTimer);
+  const go = () => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      $("#saveState").textContent = "Enregistré à " + new Date().toLocaleTimeString("fr-FR");
+    } catch (e) {
+      $("#saveState").textContent = "⚠ Enregistrement impossible (stockage plein ?)";
+    }
+  };
+  immediat ? go() : (sauveTimer = setTimeout(go, 400));
+}
+
+const fiche = () => state.fiches.find(f => f.id === state.ficheActive) || state.fiches[0];
+const cellule = (m, sem) => {
+  const f = fiche();
+  const k = m + "|" + sem;
+  if (!f.cellules[k]) f.cellules[k] = { F1:"",F2:"",F3:"",F4:"",F5:"",O1:"",O2:"",O3:"",realise:"", fait:false };
+  return f.cellules[k];
+};
+
+/* ============================ Calendrier des séances ============================ */
+/* 40 séances = 10 mois × 4 semaines. Génération hebdomadaire à partir de la date
+   de rentrée, en sautant les dates d'exclusion (vacances, fériés, fermetures). */
+const MOIS_NUM = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6];   // Septembre → Juin
+
+function anneeDebut(f) {
+  const m = (f.annee || "").match(/\d{4}/);
+  return m ? +m[0] : new Date().getFullYear();
+}
+
+/* Dates hebdomadaires successives à partir de la rentrée, interruptions retirées. */
+function datesHebdo(f, nb) {
+  const out = [];
+  const debut = f.calendrier && f.calendrier.debut;
+  if (!debut) return out;
+  const excl = new Set((f.calendrier.exclusions || []).map(x => (x.date || x)));
+  let d = debut, garde = 0;
+  while (out.length < nb && garde++ < 420) {
+    if (!excl.has(d)) out.push(d);
+    d = addDays(d, 7);
+  }
+  return out;
+}
+
+function seances(f) {
+  f = f || fiche();
+  const out = [];
+  let idx = 0;
+  for (let m = 0; m < 10; m++) for (const sem of SEMAINES) {
+    out.push({ i: idx++, mois: m, sem, date: "", moisNom: f.mois[m], sousNiveau: f.sousNiveaux[m] });
+  }
+  out.supplementaires = [];
+  const cal = f.calendrier || {};
+  if (!cal.debut) return out;
+
+  if (cal.mode === "sequentiel") {
+    // 40 séances consécutives : aucun trou, mais les mois de la fiche peuvent
+    // glisser par rapport aux mois du calendrier.
+    datesHebdo(f, 40).forEach((d, i) => { if (out[i]) out[i].date = d; });
+    return out;
+  }
+
+  // Mode « calendrier » (défaut) : chaque mois de la fiche reçoit les séances
+  // qui tombent réellement dans ce mois-ci, dans la limite de 4 (S1 → S4).
+  const y0 = anneeDebut(f);
+  const paquets = {};
+  datesHebdo(f, 60).forEach(d => { (paquets[d.slice(0, 7)] = paquets[d.slice(0, 7)] || []).push(d); });
+  for (let m = 0; m < 10; m++) {
+    const mn = MOIS_NUM[m];
+    const cle = (mn >= 9 ? y0 : y0 + 1) + "-" + String(mn).padStart(2, "0");
+    const list = paquets[cle] || [];
+    list.slice(0, 4).forEach((d, j) => { out[m * 4 + j].date = d; });
+    list.slice(4).forEach(d => out.supplementaires.push({ date: d, mois: m, moisNom: f.mois[m] }));
+  }
+  return out;
+}
+function prochaineSeance(f) {
+  const t = todayIso();
+  const list = seances(f).filter(s => s.date);
+  return list.find(s => s.date >= t) || null;
+}
+
+/* ============================ Sélecteur de valeurs ============================ */
+let pickerCtx = null;
+
+function optionsPour(code, niveau, f) {
+  f = f || fiche();
+  const r = state.ref;
+  if (code === "F5") {
+    let list = r.supports.map(s => ({
+      valeur: s.resultat || composeSupport(s),
+      meta: s.famille + " · " + (s.niveau || "—"),
+      groupe: s.famille, niveau: s.niveau
+    }));
+    return list;
+  }
+  if (code.startsWith("O")) {
+    return r.outils.map(o => ({ valeur: o.libelle, meta: "", groupe: "Outils pédagogiques", niveau: "" }));
+  }
+  if (/^F[1-4]$/.test(code)) {
+    return r.objectifsCaches.filter(o => o.code === code).map(o => ({
+      valeur: o.affiche || ("[" + o.niveau + "] " + o.libelle),
+      meta: o.fondamental + " · " + o.discipline + " " + o.typeCours,
+      groupe: o.niveau, niveau: o.niveau,
+      discipline: o.discipline, typeCours: o.typeCours
+    }));
+  }
+  return [];
+}
+
+function ouvrirPicker(opts) {
+  pickerCtx = opts;
+  const modal = $("#picker");
+  $("#pickerTitle").textContent = opts.titre;
+  $("#pickerFree").value = opts.valeur || "";
+  const filtres = $("#pickerFilters");
+  filtres.innerHTML = "";
+  const avecNiveau = opts.niveau && opts.code !== "O1" && opts.code !== "O2" && opts.code !== "O3";
+  if (avecNiveau) {
+    filtres.innerHTML =
+      `<label><input type="checkbox" id="fNiveau" checked> Limiter au niveau « ${esc(opts.niveau)} »</label>` +
+      (/^F[1-4]$/.test(opts.code)
+        ? `<label><input type="checkbox" id="fDisc" checked> Limiter à ${esc(opts.discipline)} / ${esc(opts.typeCours)}</label>`
+        : "");
+    $("#fNiveau").onchange = rendrePickerList;
+    if ($("#fDisc")) $("#fDisc").onchange = rendrePickerList;
+  }
+  $("#pickerSearch").value = "";
+  modal.hidden = false;
+  rendrePickerList();
+  setTimeout(() => $("#pickerSearch").focus(), 30);
+}
+
+function rendrePickerList() {
+  const o = pickerCtx;
+  const q = norm($("#pickerSearch").value);
+  const limNiv = $("#fNiveau") ? $("#fNiveau").checked : false;
+  let list = optionsPour(o.code, o.niveau, o.fiche);
+
+  // Un filtre qui ne rendrait aucune entrée est ignoré — mais on le dit.
+  const ignores = [];
+  if (limNiv && o.niveau) {
+    const cible = norm(o.niveau);
+    const f = list.filter(x => norm(x.niveau) === cible);
+    if (f.length) list = f; else ignores.push("le niveau « " + o.niveau + " »");
+  }
+  const limDisc = $("#fDisc") ? $("#fDisc").checked : false;
+  if (limDisc && list.some(x => x.discipline)) {
+    const d = norm(o.discipline), t = norm(o.typeCours);
+    const f = list.filter(x => !x.discipline || (norm(x.discipline) === d && norm(x.typeCours) === t));
+    if (f.length) list = f; else ignores.push(o.discipline + " / " + o.typeCours);
+  }
+  if (q) list = list.filter(x => norm(x.valeur + " " + x.meta).includes(q));
+
+  const box = $("#pickerList");
+  const avis = ignores.length
+    ? `<p class="avis">Le référentiel ne contient aucune entrée pour ${esc(ignores.join(" ni pour "))} :
+       la liste complète est affichée. Ajoutez vos propres entrées dans l'onglet
+       <b>Référentiel</b>, ou saisissez directement le texte ci-dessous.</p>`
+    : "";
+  if (!list.length) { box.innerHTML = avis + `<p class="muted" style="padding:14px">Aucune entrée. Utilisez la saisie libre ci-dessous.</p>`; return; }
+  let html = avis, groupe = null;
+  for (const x of list) {
+    if (x.groupe !== groupe) { groupe = x.groupe; html += `<div class="optgroup">${esc(groupe || "—")}</div>`; }
+    const sel = x.valeur === $("#pickerFree").value ? " sel" : "";
+    html += `<div class="opt${sel}" data-v="${esc(x.valeur)}">${esc(x.valeur)}` +
+            (x.meta ? `<span class="meta">${esc(x.meta)}</span>` : "") + `</div>`;
+  }
+  box.innerHTML = html;
+  $$(".opt", box).forEach(el => {
+    el.onclick = () => {
+      $("#pickerFree").value = el.dataset.v;
+      $$(".opt", box).forEach(o2 => o2.classList.remove("sel"));
+      el.classList.add("sel");
+    };
+    el.ondblclick = () => { $("#pickerFree").value = el.dataset.v; validerPicker(); };
+  });
+}
+
+function validerPicker() {
+  const v = $("#pickerFree").value.trim();
+  if (pickerCtx && pickerCtx.onOk) pickerCtx.onOk(v);
+  fermerPicker();
+}
+function fermerPicker() { $("#picker").hidden = true; pickerCtx = null; }
+
+/* ============================ Formulaire générique ============================ */
+let formCtx = null;
+function ouvrirForm(titre, champs, valeurs, onOk) {
+  formCtx = { champs, onOk };
+  $("#formTitle").textContent = titre;
+  $("#formBody").innerHTML = champs.map(c => {
+    const v = valeurs[c.k] == null ? "" : valeurs[c.k];
+    let inp;
+    if (c.type === "select") {
+      inp = `<select name="${c.k}">` +
+        (c.vide ? `<option value=""></option>` : "") +
+        c.options.map(o => `<option${o === v ? " selected" : ""}>${esc(o)}</option>`).join("") + `</select>`;
+    } else if (c.type === "textarea") {
+      inp = `<textarea name="${c.k}" rows="${c.rows || 3}">${esc(v)}</textarea>`;
+    } else {
+      inp = `<input type="${c.type || "text"}" name="${c.k}" value="${esc(v)}"${c.attrs || ""}>`;
+    }
+    return `<div class="fieldrow"><label>${esc(c.label)}</label><div>${inp}${c.aide ? `<div class="muted" style="font-size:11.5px;margin-top:3px">${esc(c.aide)}</div>` : ""}</div></div>`;
+  }).join("");
+  $("#formModal").hidden = false;
+  setTimeout(() => { const e = $("#formBody").querySelector("input,select,textarea"); if (e) e.focus(); }, 30);
+}
+function validerForm() {
+  if (!formCtx) return;
+  const vals = {};
+  formCtx.champs.forEach(c => {
+    const el = $(`#formBody [name="${c.k}"]`);
+    vals[c.k] = el ? el.value.trim() : "";
+  });
+  const ok = formCtx.onOk;
+  $("#formModal").hidden = true; formCtx = null;
+  ok(vals);
+}
+
+/* ============================ Vue : tableau de bord ============================ */
+function vueDashboard() {
+  const f = fiche();
+  const cells = seances(f);
+  const faits = cells.filter(s => cellule(s.mois, s.sem).fait).length;
+  const remplies = cells.filter(s => {
+    const c = cellule(s.mois, s.sem);
+    return CHAMPS_SAISIE.some(ch => (c[ch.code] || "").trim());
+  }).length;
+  const pct = Math.round(faits / 40 * 100);
+  const pctRempl = Math.round(remplies / 40 * 100);
+  const next = prochaineSeance(f);
+  const cNext = next ? cellule(next.mois, next.sem) : null;
+
+  const trous = cells.filter(s => {
+    const c = cellule(s.mois, s.sem);
+    return !(c.F5 || "").trim() || !(c.F1 || "").trim();
+  });
+
+  $("#view-dashboard").innerHTML = `
+  <div class="grid-cards">
+    <div class="card">
+      <h3>Fiche active</h3>
+      <p style="font-size:16px;font-weight:650;margin:.2em 0">${esc(f.nom)}</p>
+      <p class="muted" style="font-size:12.5px">
+        ${esc(f.discipline)} · ${esc(f.typeCours)} · Cycle ${esc(f.cycle)}<br>
+        Professeur : ${esc(f.professeur || "—")}<br>
+        Année scolaire ${esc(f.annee)} · Timing : ${esc(f.timing || "—")}
+      </p>
+      <p><span class="pill">40 semaines / 10 mois</span></p>
+    </div>
+
+    <div class="card">
+      <h3>Programmation renseignée</h3>
+      <div class="kpi">${pctRempl}% <small>${remplies}/40 séances</small></div>
+      <div class="bar"><i style="width:${pctRempl}%"></i></div>
+      <p class="muted" style="font-size:12.5px">${trous.length
+        ? trous.length + " séance(s) sans objectif affiché ou sans F1."
+        : "Toutes les séances ont un objectif affiché et un objectif de musicalité."}</p>
+    </div>
+
+    <div class="card">
+      <h3>Séances réalisées</h3>
+      <div class="kpi">${pct}% <small>${faits}/40 cochées</small></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <p class="muted" style="font-size:12.5px">Cochez « fait » dans la grille ou dans la vue Séance.</p>
+    </div>
+
+    <div class="card">
+      <h3>Prochaine séance</h3>
+      ${next ? `
+        <p style="font-size:15px;font-weight:650;margin:.2em 0">${esc(next.moisNom)} — ${esc(next.sem)}${next.sem === "S4" ? " (révision)" : ""}</p>
+        <p class="muted" style="font-size:12.5px">${next.date ? frDate(next.date) + " · " : ""}${esc(next.sousNiveau)}</p>
+        <div class="block affiche" style="margin-top:8px">
+          <h4>F5 — annoncé aux élèves</h4><div>${esc(cNext.F5 || "— à définir —")}</div>
+        </div>
+        <p style="margin-top:10px"><button class="btn small" data-go="seance">Ouvrir la fiche de séance</button></p>
+      ` : `<p class="muted">Renseignez la date de rentrée dans l'onglet <b>Calendrier</b> pour dater les 40 séances.</p>
+           <p><button class="btn small" data-go="calendrier">Aller au calendrier</button></p>`}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Progression du cycle sur l'année</h2>
+    <div class="table-wrap" style="max-height:none">
+      <table class="data">
+        <thead><tr><th style="width:130px">Mois</th><th style="width:170px">Sous-niveau</th>
+          <th>Objectifs prioritaires du mois</th>
+          <th style="width:90px">Renseigné</th><th style="width:90px">Réalisé</th></tr></thead>
+        <tbody>
+        ${f.mois.map((mn, m) => {
+          const semCells = SEMAINES.map(s => cellule(m, s));
+          const r = semCells.filter(c => CHAMPS_SAISIE.some(ch => (c[ch.code] || "").trim())).length;
+          const fa = semCells.filter(c => c.fait).length;
+          return `<tr>
+            <td><b>${esc(mn)}</b></td>
+            <td><span class="pill grey">${esc(f.sousNiveaux[m] || "")}</span></td>
+            <td style="white-space:pre-wrap">${esc(f.objectifsPrioritaires[m] || "—")}</td>
+            <td>${r}/4</td>
+            <td>${fa ? `<span class="pill ${fa === 4 ? "ok" : "warn"}">${fa}/4</span>` : `<span class="pill grey">0/4</span>`}</td>
+          </tr>`;
+        }).join("")}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Toutes les fiches</h2>
+    <div class="table-wrap" style="max-height:none">
+      <table class="data">
+        <thead><tr><th>Fiche</th><th>Professeur</th><th>Discipline</th><th>Type</th><th>Cycle</th>
+          <th>Année</th><th style="width:120px">Avancement</th><th style="width:150px"></th></tr></thead>
+        <tbody>${state.fiches.map(x => {
+          const cs = Object.values(x.cellules || {});
+          const rr = cs.filter(c => CHAMPS_SAISIE.some(ch => (c[ch.code] || "").trim())).length;
+          return `<tr${x.id === f.id ? ' class="next"' : ""}>
+            <td>${esc(x.nom)}</td><td>${esc(x.professeur || "—")}</td><td>${esc(x.discipline)}</td>
+            <td>${esc(x.typeCours)}</td><td>${esc(x.cycle)}</td><td>${esc(x.annee)}</td>
+            <td>${rr}/40</td>
+            <td>${x.id === f.id ? '<span class="pill">active</span>' : `<button class="btn small ghost" data-fiche="${x.id}">Activer</button>`}</td>
+          </tr>`;
+        }).join("")}</tbody>
+      </table>
+    </div>
+  </div>`;
+
+  $$("[data-go]", $("#view-dashboard")).forEach(b => b.onclick = () => allerA(b.dataset.go));
+  $$("[data-fiche]", $("#view-dashboard")).forEach(b => b.onclick = () => {
+    state.ficheActive = b.dataset.fiche; sauver(true); majSelecteurFiches(); rendre();
+  });
+}
+
+/* ============================ Vue : grille annuelle ============================ */
+function vueGrille() {
+  const f = fiche();
+  let html = `
+  <div class="toolbar no-print">
+    <button class="btn ghost small" id="gExportXls">Exporter vers Excel</button>
+    <button class="btn ghost small" id="gExportCsv">Exporter en CSV</button>
+    <button class="btn ghost small" id="gVider">Vider la grille</button>
+    <button class="btn ghost small" id="gModele">Recharger le modèle Mambo</button>
+    <label style="font-size:12px;color:var(--ink-soft)">Impression
+      <select id="gMiseEnPage" style="font-size:12px">
+        <option value="2pages"${state.impression !== "1page" ? " selected" : ""}>A3 paysage — 2 pages (5 mois par page)</option>
+        <option value="1page"${state.impression === "1page" ? " selected" : ""}>A3 paysage — 1 page (réduit)</option>
+      </select></label>
+    <span class="spacer"></span>
+    <span class="muted" style="font-size:12px">Cliquez dans une cellule pour saisir · bouton ▾ pour la liste du référentiel</span>
+  </div>
+  <div class="card" style="padding:12px">
+    <h2 style="margin-bottom:2px">${esc(REF.ficheModele.titre)}</h2>
+    <p class="muted" style="font-size:12px;margin-bottom:10px">
+      Professeur : <b>${esc(f.professeur || "—")}</b> · Discipline : <b>${esc(f.discipline)}</b> ·
+      Type de cours : <b>${esc(f.typeCours)}</b> · Cycle : <b>${esc(f.cycle)}</b> ·
+      Timing : <b>${esc(f.timing || "—")}</b> · Année scolaire : <b>${esc(f.annee)}</b> ·
+      Dernière mise à jour : <b>${esc(frDate(f.maj))}</b>
+    </p>
+    <div class="grille-wrap">${tableGrilleHtml(f, [0,1,2,3,4,5,6,7,8,9], true)}</div>
+    <div class="legend">
+      <span><i style="background:var(--cache)"></i> F1–F4 : objectifs cachés (professeur)</span>
+      <span><i style="background:var(--affiche)"></i> F5 : objectif affiché aux élèves</span>
+      <span><i style="background:var(--outil)"></i> Outils pédagogiques</span>
+      <span><i style="background:var(--realise)"></i> Réalisé + commentaires</span>
+      <span><i style="background:var(--revision)"></i> S4 : semaine de révision</span>
+    </div>
+  </div>`;
+
+  const v = $("#view-grille");
+  v.innerHTML = html;
+
+  // Saisie libre
+  $$(".txt", v).forEach(el => {
+    el.addEventListener("input", () => ecrireCellule(el.dataset.id, el.innerText));
+    el.addEventListener("blur", () => sauver(true));
+  });
+  // Bouton liste
+  $$(".pick", v).forEach(b => b.onclick = () => {
+    const id = b.dataset.id;
+    const [m, sem, code] = id.split("|");
+    const ch = CHAMPS.find(c => c.code === code);
+    ouvrirPicker({
+      titre: ch.label + " — " + f.mois[+m] + " / " + sem,
+      code, niveau: f.sousNiveaux[+m], discipline: f.discipline, typeCours: f.typeCours,
+      valeur: cellule(+m, sem)[code],
+      onOk: val => { ecrireCellule(id, val); sauver(true); vueGrille(); }
+    });
+  });
+  // Cases « fait »
+  $$("[data-fait]", v).forEach(cb => cb.onchange = () => {
+    const [m, sem] = cb.dataset.fait.split("|");
+    cellule(+m, sem).fait = cb.checked;
+    f.maj = todayIso(); sauver(true);
+  });
+  // Sous-niveaux
+  $$("[data-sousniv]", v).forEach(td => td.onclick = () => {
+    const m = +td.dataset.sousniv;
+    ouvrirForm("Sous-niveau — " + f.mois[m], [
+      { k: "v", label: "Sous-niveau", type: "select", options: uniq(state.ref.listes.sousNiveaux.concat(state.ref.listes.cycles, [f.sousNiveaux[m]]).filter(Boolean)), vide: true },
+      { k: "libre", label: "ou saisie libre", type: "text" }
+    ], { v: f.sousNiveaux[m] }, vals => {
+      f.sousNiveaux[m] = (vals.libre || vals.v || "").toUpperCase();
+      f.maj = todayIso(); sauver(true); vueGrille();
+    });
+  });
+
+  $("#gMiseEnPage").onchange = e => { state.impression = e.target.value; sauver(true); };
+  $("#gExportXls").onclick = exporterXls;
+  $("#gExportCsv").onclick = exporterCsv;
+  $("#gVider").onclick = () => {
+    if (!confirm("Vider entièrement la grille de « " + f.nom + " » ? Les objectifs et commentaires seront perdus.")) return;
+    const vide = ficheVierge({ cycle: f.cycle });
+    f.cellules = vide.cellules; f.objectifsPrioritaires = new Array(10).fill("");
+    f.maj = todayIso(); sauver(true); vueGrille(); toast("Grille vidée");
+  };
+  $("#gModele").onclick = () => {
+    if (!confirm("Remplacer le contenu de la grille par le modèle « Mambo Couple Débutant » ?")) return;
+    const m = REF.ficheModele;
+    f.objectifsPrioritaires = clone(m.objectifsPrioritaires);
+    f.sousNiveaux = clone(m.sousNiveaux);
+    for (const k in m.cellules) f.cellules[k] = Object.assign({}, m.cellules[k], { fait: (f.cellules[k] || {}).fait || false });
+    f.maj = todayIso(); sauver(true); vueGrille(); toast("Modèle rechargé");
+  };
+}
+
+/* Construit le tableau de la grille pour une sélection de mois.
+   editable = true pour la vue à l'écran, false pour la version imprimée. */
+function tableGrilleHtml(f, idxMois, editable) {
+  const txt = (v, id, ph, pick) => editable
+    ? celluleHtml(v, id, ph, pick)
+    : `<div class="cell"><div class="txt">${esc(v || "")}</div></div>`;
+
+  let h = `<table class="grille">
+    <colgroup><col style="width:46px"><col style="width:158px">${idxMois.map(() => '<col class="mois">').join("")}</colgroup>
+    <thead><tr>
+      <th class="sem">SEM.</th><th class="champ">Champ</th>
+      ${idxMois.map(i => `<th>Mois ${i + 1} — ${esc(f.mois[i])}</th>`).join("")}
+    </tr></thead>
+    <tbody>
+      <tr><th class="sem"></th><th class="champ">Sous-niveau</th>
+        ${idxMois.map(m => `<td class="sousniv"${editable ? ` data-sousniv="${m}" title="Cliquer pour modifier"` : ""}>${esc(f.sousNiveaux[m] || "")}</td>`).join("")}
+      </tr>
+      <tr><th class="sem"></th><th class="champ">Objectifs prioritaires du mois<br><span class="muted" style="font-weight:400">(1 à 3, max 2 / cours)</span></th>
+        ${idxMois.map(m => `<td class="prio">${txt(f.objectifsPrioritaires[m], "prio-" + m, "Objectifs du mois…", true)}</td>`).join("")}
+      </tr>`;
+
+  for (const sem of SEMAINES) {
+    CHAMPS.forEach((ch, ci) => {
+      const first = ci === 0;
+      h += `<tr class="${first ? "sem-start " : ""}${sem === "S4" ? "revision" : ""}">`;
+      if (first) h += `<th class="sem" rowspan="${CHAMPS.length}">${sem}${sem === "S4" ? "<br>(Révision)" : ""}</th>`;
+      h += `<th class="champ rowhead-${ch.classe}">${esc(ch.label)}</th>`;
+      for (const m of idxMois) {
+        const c = cellule(m, sem);
+        const id = m + "|" + sem + "|" + ch.code;
+        h += `<td class="${ch.classe}">${txt(c[ch.code], id, ch.type === "libre" ? "Après le cours…" : "…", ch.code !== "realise")}`;
+        if (ch.code === "realise" && editable) {
+          h += `<label class="done-flag"><input type="checkbox" data-fait="${m}|${sem}"${c.fait ? " checked" : ""}> séance faite</label>`;
+        }
+        h += `</td>`;
+      }
+      h += `</tr>`;
+    });
+  }
+  return h + `</tbody></table>`;
+}
+
+function celluleHtml(val, id, ph, avecPick) {
+  return `<div class="cell"><div class="txt" contenteditable="plaintext-only" data-id="${id}" data-ph="${esc(ph)}">${esc(val || "")}</div>` +
+    (avecPick !== false ? `<button class="pick" data-id="${id}" title="Choisir dans le référentiel">▾</button>` : "") + `</div>`;
+}
+
+function ecrireCellule(id, val) {
+  const f = fiche();
+  if (id.startsWith("prio-")) { f.objectifsPrioritaires[+id.slice(5)] = val; }
+  else {
+    const [m, sem, code] = id.split("|");
+    cellule(+m, sem)[code] = val;
+  }
+  f.maj = todayIso();
+  sauver();
+}
+function uniq(a) { return Array.from(new Set(a)); }
+
+/* ============================ Vue : séance ============================ */
+let seanceSel = null;
+function vueSeance() {
+  const f = fiche();
+  const list = seances(f);
+  if (seanceSel == null) {
+    const n = prochaineSeance(f);
+    seanceSel = n ? n.i : 0;
+  }
+  seanceSel = Math.max(0, Math.min(list.length - 1, seanceSel));
+  const s = list[seanceSel];
+  const c = cellule(s.mois, s.sem);
+
+  const bloc = (cls, titre, code, ph, wide) => `
+    <div class="block ${cls}${wide ? " wide" : ""}">
+      <h4><span>${esc(titre)}</span>${code !== "realise"
+        ? `<button class="pickmini no-print" data-pick="${code}" title="Choisir dans le référentiel">▾</button>` : ""}</h4>
+      <textarea class="edit" rows="${code === "realise" ? 4 : 2}" data-code="${code}" placeholder="${esc(ph || "")}">${esc(c[code] || "")}</textarea>
+    </div>`;
+
+  $("#view-seance").innerHTML = `
+  <div class="toolbar no-print">
+    <button class="btn ghost small" id="sPrev">← Séance précédente</button>
+    <select id="sSel">${list.map((x, i) =>
+      `<option value="${i}"${i === seanceSel ? " selected" : ""}>${i + 1}. ${esc(x.moisNom)} — ${x.sem}${x.date ? " · " + frDate(x.date) : ""}</option>`).join("")}</select>
+    <button class="btn ghost small" id="sNext">Séance suivante →</button>
+    <button class="btn ghost small" id="sAuj">Aller à la prochaine séance</button>
+    <span class="spacer"></span>
+    <label style="font-size:12.5px"><input type="checkbox" id="sFait"${c.fait ? " checked" : ""}> Séance réalisée</label>
+  </div>
+
+  <div class="seance-sheet">
+    <div class="seance-head">
+      <div>
+        <h2>Séance ${seanceSel + 1}/40 — ${esc(s.moisNom)} · ${esc(s.sem)}${s.sem === "S4" ? " (révision)" : ""}</h2>
+        <p class="muted" style="font-size:12.5px;margin:0">
+          ${esc(f.discipline)} · ${esc(f.typeCours)} · ${esc(f.cycle)} — sous-niveau <b>${esc(s.sousNiveau)}</b><br>
+          ${s.date ? frDate(s.date) + " · " + JOURS[new Date(s.date + "T12:00:00").getDay()] : "date non planifiée"}
+          ${f.calendrier.heure ? " · " + esc(f.calendrier.heure) : ""}${f.calendrier.duree ? " (" + f.calendrier.duree + " min)" : ""}
+          ${f.calendrier.lieu ? " · " + esc(f.calendrier.lieu) : ""}
+        </p>
+      </div>
+      <div style="text-align:right">
+        <p class="muted" style="font-size:12px;margin:0">Professeur</p>
+        <p style="font-weight:650;margin:0">${esc(f.professeur || "—")}</p>
+        <p class="muted" style="font-size:12px;margin:6px 0 0">Timing</p>
+        <p style="margin:0">${esc(f.timing || "—")}</p>
+      </div>
+    </div>
+
+    <div class="block" style="margin-bottom:12px">
+      <h4 style="background:var(--accent-soft);color:var(--accent)">Objectifs prioritaires du mois</h4>
+      <div>${esc(f.objectifsPrioritaires[s.mois] || "—")}</div>
+    </div>
+
+    <div class="seance-grid">
+      ${bloc("affiche", "F5 — Support chorégraphique · ANNONCÉ AUX ÉLÈVES", "F5", "Figure travaillée…", true)}
+      ${bloc("cache", "F1 — Musicalité (objectif caché)", "F1")}
+      ${bloc("cache", "F2 — Appuis (objectif caché)", "F2")}
+      ${bloc("cache", "F3 — Connexion (objectif caché)", "F3")}
+      ${bloc("cache", "F4 — Respiration (objectif caché)", "F4")}
+      ${bloc("outil", "Outil 1", "O1")}
+      ${bloc("outil", "Outil 2", "O2")}
+      ${bloc("outil", "Outil 3", "O3")}
+      <div class="block outil" style="display:flex;align-items:center;justify-content:center">
+        <span class="muted" style="font-size:11.5px;padding:8px;text-align:center">Jusqu'à 3 outils par séance —<br>laisser vide si non utilisé.</span>
+      </div>
+      ${bloc("realise", "Réalisé + commentaires (à remplir après le cours)", "realise", "Ce qui a été fait, ce qui a bloqué, à reprendre…", true)}
+    </div>
+  </div>`;
+
+  const v = $("#view-seance");
+  $$(".edit", v).forEach(t => {
+    t.addEventListener("input", () => { c[t.dataset.code] = t.value; f.maj = todayIso(); sauver(); });
+    t.addEventListener("blur", () => sauver(true));
+  });
+  $("#sSel").onchange = e => { seanceSel = +e.target.value; vueSeance(); };
+  $("#sPrev").onclick = () => { seanceSel--; vueSeance(); };
+  $("#sNext").onclick = () => { seanceSel++; vueSeance(); };
+  $("#sAuj").onclick = () => { const n = prochaineSeance(f); seanceSel = n ? n.i : 0; vueSeance(); };
+  $("#sFait").onchange = e => { c.fait = e.target.checked; sauver(true); };
+
+  const pick = code => ouvrirPicker({
+    titre: CHAMPS.find(x => x.code === code).label + " — " + s.moisNom + " / " + s.sem,
+    code, niveau: s.sousNiveau, discipline: f.discipline, typeCours: f.typeCours,
+    valeur: c[code], onOk: val => { c[code] = val; f.maj = todayIso(); sauver(true); vueSeance(); }
+  });
+  $$("[data-pick]", v).forEach(b => b.onclick = () => pick(b.dataset.pick));
+}
+
+/* ============================ Vue : calendrier ============================ */
+function vueCalendrier() {
+  const f = fiche();
+  const cal = f.calendrier;
+  const list = seances(f);
+  const t = todayIso();
+  const next = prochaineSeance(f);
+
+  $("#view-calendrier").innerHTML = `
+  <div class="card no-print">
+    <h2>Planification des 40 séances</h2>
+    <p class="muted" style="font-size:12.5px">Une séance par semaine, à partir de la date de rentrée, en sautant les
+      dates d'interruption. Les 40 séances se répartissent en 10 mois × 4 semaines (S1–S3 acquisition, S4 révision).</p>
+    <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div>
+        <div class="fieldrow"><label>Date de la 1re séance</label><input type="date" id="cDebut" value="${esc(cal.debut)}"></div>
+        <div class="fieldrow"><label>Report des séances</label><select id="cMode">
+          <option value="calendrier"${cal.mode !== "sequentiel" ? " selected" : ""}>Caler sur les mois réels (Septembre → Juin)</option>
+          <option value="sequentiel"${cal.mode === "sequentiel" ? " selected" : ""}>Enchaîner les 40 séances sans trou</option>
+        </select></div>
+        <div class="fieldrow"><label>Heure</label><input type="time" id="cHeure" value="${esc(cal.heure || "")}"></div>
+        <div class="fieldrow"><label>Durée (minutes)</label><input type="number" id="cDuree" min="15" step="15" value="${esc(cal.duree || 60)}"></div>
+        <div class="fieldrow"><label>Lieu / salle</label><input type="text" id="cLieu" value="${esc(cal.lieu || "")}"></div>
+      </div>
+      <div>
+        <div class="fieldrow" style="grid-template-columns:1fr">
+          <label>Dates d'interruption (une par ligne, format JJ/MM/AAAA ou AAAA-MM-JJ ;
+            un libellé peut suivre après un espace)</label>
+          <textarea id="cExcl" rows="8" placeholder="21/10/2026 Vacances de la Toussaint&#10;23/12/2026 Vacances de Noël">${esc((cal.exclusions || []).map(x => frDate(x.date) + (x.motif ? " " + x.motif : "")).join("\n"))}</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar" style="margin-top:10px">
+      <button class="btn" id="cAppliquer">Générer le calendrier</button>
+      <button class="btn ghost" id="cIcs">Exporter en .ics (agenda)</button>
+      <button class="btn ghost" id="cCsv">Exporter en CSV</button>
+      ${next ? `<span class="pill">Prochaine séance : ${frDate(next.date)} — ${esc(next.moisNom)} ${next.sem}</span>` : ""}
+    </div>
+  </div>
+
+  ${diagnosticCalendrier(f, list)}
+
+  <div class="card">
+    <h2>Calendrier prévisionnel — ${esc(f.nom)}</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th style="width:40px">#</th><th style="width:110px">Date</th><th style="width:90px">Jour</th>
+          <th style="width:110px">Mois</th><th style="width:50px">Sem.</th><th style="width:160px">Sous-niveau</th>
+          <th>F5 — objectif affiché</th><th style="width:70px">Fait</th></tr></thead>
+        <tbody>${list.map(s => {
+          const c = cellule(s.mois, s.sem);
+          const cls = s.date && s.date < t ? "past" : (next && s.i === next.i ? "next" : "");
+          return `<tr class="${cls}">
+            <td>${s.i + 1}</td>
+            <td>${s.date ? frDate(s.date) : '<span class="muted">—</span>'}</td>
+            <td>${s.date ? JOURS[new Date(s.date + "T12:00:00").getDay()] : ""}</td>
+            <td>${esc(s.moisNom)}</td>
+            <td>${s.sem}${s.sem === "S4" ? "*" : ""}</td>
+            <td><span class="pill grey">${esc(s.sousNiveau || "")}</span></td>
+            <td>${esc(c.F5 || "—")}</td>
+            <td><input type="checkbox" data-cfait="${s.mois}|${s.sem}"${c.fait ? " checked" : ""}></td>
+          </tr>`;
+        }).join("")}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:11.5px;margin-top:8px">* S4 = semaine de révision.</p>
+  </div>`;
+
+  const v = $("#view-calendrier");
+  $("#cAppliquer").onclick = () => {
+    cal.debut = $("#cDebut").value;
+    cal.mode = $("#cMode").value;
+    cal.heure = $("#cHeure").value;
+    cal.duree = +$("#cDuree").value || 60;
+    cal.lieu = $("#cLieu").value.trim();
+    cal.exclusions = parseExclusions($("#cExcl").value);
+    f.maj = todayIso(); sauver(true); vueCalendrier();
+    toast(cal.debut ? "Calendrier généré" : "Indiquez une date de 1re séance");
+  };
+  $("#cIcs").onclick = exporterIcs;
+  $("#cCsv").onclick = exporterCalendrierCsv;
+  $$("[data-cfait]", v).forEach(cb => cb.onchange = () => {
+    const [m, sem] = cb.dataset.cfait.split("|");
+    cellule(+m, sem).fait = cb.checked; sauver(true);
+  });
+}
+
+/* Signale les mois incomplets et les semaines excédentaires. */
+function diagnosticCalendrier(f, list) {
+  if (!f.calendrier.debut) return "";
+  const manquants = [], msgs = [];
+  for (let m = 0; m < 10; m++) {
+    const n = list.filter(s => s.mois === m && s.date).length;
+    if (n < 4) manquants.push(f.mois[m] + " (" + n + "/4)");
+  }
+  if (manquants.length)
+    msgs.push(`<b>${manquants.length} mois n'atteignent pas 4 séances</b> : ${esc(manquants.join(", "))}.
+      Avancez la date de rentrée, retirez une interruption, ou basculez sur « Enchaîner les 40 séances sans trou ».`);
+  const sup = list.supplementaires || [];
+  if (sup.length)
+    msgs.push(`<b>${sup.length} semaine(s) en plus</b> des 4 prévues : ${esc(sup.map(x => frDate(x.date) + " (" + x.moisNom + ")").join(", "))}.
+      À utiliser en révision libre, rattrapage ou atelier.`);
+  if (!msgs.length) return "";
+  return `<div class="card" style="border-left:4px solid var(--warn)">
+    <h3 style="color:var(--warn)">Points de vigilance sur le calendrier</h3>
+    ${msgs.map(x => "<p style=\"font-size:12.5px;margin:.3em 0\">" + x + "</p>").join("")}</div>`;
+}
+
+function parseExclusions(txt) {
+  const out = [];
+  txt.split(/\n+/).forEach(l => {
+    l = l.trim(); if (!l) return;
+    let m = l.match(/^(\d{2})\/(\d{2})\/(\d{4})\s*(.*)$/);
+    if (m) { out.push({ date: `${m[3]}-${m[2]}-${m[1]}`, motif: m[4].trim() }); return; }
+    m = l.match(/^(\d{4})-(\d{2})-(\d{2})\s*(.*)$/);
+    if (m) { out.push({ date: `${m[1]}-${m[2]}-${m[3]}`, motif: m[4].trim() }); }
+  });
+  return out;
+}
+
+/* ============================ Vue : référentiel ============================ */
+let refOnglet = "caches";
+function vueReferentiel() {
+  const r = state.ref;
+  const nav = [
+    ["caches", "Objectifs cachés (F1–F4)", r.objectifsCaches.length],
+    ["supports", "Supports chorégraphiques (F5)", r.supports.length],
+    ["outils", "Outils pédagogiques", r.outils.length],
+    ["listes", "Listes de vocabulaire", ""]
+  ];
+  let corps = "";
+  if (refOnglet === "caches") corps = tableCaches();
+  else if (refOnglet === "supports") corps = tableSupports();
+  else if (refOnglet === "outils") corps = tableOutils();
+  else corps = tableListes();
+
+  $("#view-referentiel").innerHTML = `
+  <div class="subtabs no-print">${nav.map(([k, l, n]) =>
+    `<button class="subtab${refOnglet === k ? " active" : ""}" data-ref="${k}">${esc(l)}${n !== "" ? " (" + n + ")" : ""}</button>`).join("")}</div>
+  <div class="card">${corps}</div>`;
+
+  const v = $("#view-referentiel");
+  $$("[data-ref]", v).forEach(b => b.onclick = () => { refOnglet = b.dataset.ref; vueReferentiel(); });
+  brancherReferentiel();
+}
+
+function barreRef(id, placeholder, boutons) {
+  return `<div class="toolbar no-print">
+    <input type="search" id="${id}" placeholder="${esc(placeholder)}" style="min-width:280px">
+    ${boutons}
+    <span class="spacer"></span>
+    <button class="btn ghost small" id="refReset">Restaurer le référentiel d'origine</button>
+  </div>`;
+}
+
+function tableCaches() {
+  return barreRef("qCaches", "Rechercher un objectif caché…",
+    `<button class="btn small" id="addCache">+ Objectif</button>`) + `
+  <div class="table-wrap"><table class="data" id="tCaches">
+    <thead><tr><th style="width:44px">N°</th><th style="width:56px">Code</th><th style="width:120px">Fondamental</th>
+      <th style="width:150px">Niveau</th><th style="width:90px">Discipline</th><th style="width:70px">Type</th>
+      <th>Libellé standard</th><th style="width:70px"></th></tr></thead>
+    <tbody>${state.ref.objectifsCaches.map((o, i) => `<tr data-i="${i}" data-s="${esc(norm(o.libelle + " " + o.niveau + " " + o.fondamental + " " + o.code))}">
+      <td>${esc(o.n)}</td><td><b>${esc(o.code)}</b></td><td>${esc(o.fondamental)}</td>
+      <td>${esc(o.niveau)}</td><td>${esc(o.discipline)}</td><td>${esc(o.typeCours)}</td>
+      <td><div class="celledit" contenteditable="plaintext-only" data-ci="${i}">${esc(o.libelle)}</div></td>
+      <td><button class="btn small ghost danger" data-delc="${i}">Suppr.</button></td>
+    </tr>`).join("")}</tbody>
+  </table></div>
+  <p class="muted" style="font-size:11.5px;margin-top:8px">Le libellé affiché dans les menus est préfixé automatiquement par le niveau, entre crochets.</p>`;
+}
+
+function tableSupports() {
+  const cols = ["famille", "figure", "timing", "sortie", "bras", "croise", "tours", "style", "niveau"];
+  const labels = ["Famille", "Figure / Exemple", "Timing", "Sortie / Appuis", "Bras / Connexion", "Croisé", "Tours", "Style", "Niveau"];
+  return barreRef("qSupports", "Rechercher un support chorégraphique…",
+    `<button class="btn small" id="addSupport">+ Support</button>`) + `
+  <div class="table-wrap"><table class="data" id="tSupports">
+    <thead><tr><th style="width:40px">N°</th>${labels.map(l => `<th>${esc(l)}</th>`).join("")}<th>Libellé composé (F5)</th><th style="width:110px"></th></tr></thead>
+    <tbody>${state.ref.supports.map((s, i) => `<tr data-i="${i}" data-s="${esc(norm(Object.values(s).join(" ")))}">
+      <td>${esc(s.n)}</td>${cols.map(c => `<td>${esc(s[c] || "")}</td>`).join("")}
+      <td style="font-size:11.5px">${esc(s.resultat || composeSupport(s))}</td>
+      <td><button class="btn small ghost" data-eds="${i}">Modifier</button>
+          <button class="btn small ghost danger" data-dels="${i}">Suppr.</button></td>
+    </tr>`).join("")}</tbody>
+  </table></div>
+  <p class="muted" style="font-size:11.5px;margin-top:8px">Le libellé composé suit la règle du classeur :
+    figure — Timing : … — sortie — bras — croisé — tours — Style : … (les rubriques vides sont omises).</p>`;
+}
+
+function tableOutils() {
+  return barreRef("qOutils", "Rechercher un outil pédagogique…",
+    `<button class="btn small" id="addOutil">+ Outil</button>`) + `
+  <div class="table-wrap"><table class="data" id="tOutils">
+    <thead><tr><th style="width:50px">N°</th><th>Libellé</th><th style="width:70px"></th></tr></thead>
+    <tbody>${state.ref.outils.map((o, i) => `<tr data-i="${i}" data-s="${esc(norm(o.libelle))}">
+      <td>${esc(o.n)}</td>
+      <td><div class="celledit" contenteditable="plaintext-only" data-oi="${i}">${esc(o.libelle)}</div></td>
+      <td><button class="btn small ghost danger" data-delo="${i}">Suppr.</button></td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
+}
+
+function tableListes() {
+  const l = state.ref.listes;
+  const blocs = [
+    ["disciplines", "Disciplines"], ["typesCours", "Types de cours"], ["cycles", "Cycles / Niveaux"],
+    ["sousNiveaux", "Sous-niveaux (cycle Débutant)"], ["roles", "Rôles"], ["timings", "Timing"]
+  ];
+  return `<div class="toolbar no-print"><span class="spacer"></span>
+      <button class="btn ghost small" id="refReset">Restaurer le référentiel d'origine</button></div>
+  <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+  ${blocs.map(([k, t]) => `<div>
+    <h3>${esc(t)}</h3>
+    <textarea data-liste="${k}" rows="${Math.max(4, (l[k] || []).length + 1)}" style="width:100%">${esc((l[k] || []).join("\n"))}</textarea>
+  </div>`).join("")}</div>
+  <p class="muted" style="font-size:12px;margin-top:10px">Une valeur par ligne. Les modifications sont enregistrées en quittant le champ.</p>`;
+}
+
+function brancherReferentiel() {
+  const v = $("#view-referentiel");
+  const rst = $("#refReset", v);
+  if (rst) rst.onclick = () => {
+    if (!confirm("Restaurer le référentiel tel qu'il figure dans le classeur Excel d'origine ?\nVos ajouts et modifications du référentiel seront perdus (les fiches ne sont pas touchées).")) return;
+    state.ref = { objectifsCaches: clone(REF.objectifsCaches), supports: clone(REF.supports), outils: clone(REF.outils), listes: clone(REF.listes) };
+    sauver(true); vueReferentiel(); toast("Référentiel restauré");
+  };
+
+  const filtre = (inputId, tableId) => {
+    const inp = $("#" + inputId, v); if (!inp) return;
+    inp.oninput = () => {
+      const q = norm(inp.value);
+      $$("#" + tableId + " tbody tr", v).forEach(tr => {
+        tr.hidden = q ? !tr.dataset.s.includes(q) : false;
+      });
+    };
+  };
+  filtre("qCaches", "tCaches"); filtre("qSupports", "tSupports"); filtre("qOutils", "tOutils");
+
+  $$("[data-ci]", v).forEach(el => el.onblur = () => {
+    const o = state.ref.objectifsCaches[+el.dataset.ci];
+    o.libelle = el.innerText.trim();
+    o.affiche = o.niveau ? "[" + o.niveau + "] " + o.libelle : o.libelle;
+    sauver(true);
+  });
+  $$("[data-oi]", v).forEach(el => el.onblur = () => {
+    state.ref.outils[+el.dataset.oi].libelle = el.innerText.trim(); sauver(true);
+  });
+  $$("[data-delc]", v).forEach(b => b.onclick = () => {
+    if (!confirm("Supprimer cet objectif du référentiel ?")) return;
+    state.ref.objectifsCaches.splice(+b.dataset.delc, 1); sauver(true); vueReferentiel();
+  });
+  $$("[data-delo]", v).forEach(b => b.onclick = () => {
+    if (!confirm("Supprimer cet outil du référentiel ?")) return;
+    state.ref.outils.splice(+b.dataset.delo, 1); sauver(true); vueReferentiel();
+  });
+  $$("[data-dels]", v).forEach(b => b.onclick = () => {
+    if (!confirm("Supprimer ce support chorégraphique ?")) return;
+    state.ref.supports.splice(+b.dataset.dels, 1); sauver(true); vueReferentiel();
+  });
+  $$("[data-eds]", v).forEach(b => b.onclick = () => editerSupport(+b.dataset.eds));
+  $$("[data-liste]", v).forEach(t => t.onblur = () => {
+    state.ref.listes[t.dataset.liste] = t.value.split(/\n+/).map(x => x.trim()).filter(Boolean);
+    sauver(true); toast("Liste enregistrée");
+  });
+
+  const ac = $("#addCache", v);
+  if (ac) ac.onclick = () => {
+    const l = state.ref.listes;
+    ouvrirForm("Nouvel objectif caché", [
+      { k: "code", label: "Fondamental", type: "select", options: ["F1", "F2", "F3", "F4"] },
+      { k: "niveau", label: "Niveau envisagé", type: "select", options: uniq(l.sousNiveaux.concat(l.cycles)).map(x => x.toUpperCase()) },
+      { k: "discipline", label: "Discipline", type: "select", options: l.disciplines },
+      { k: "typeCours", label: "Type de cours", type: "select", options: l.typesCours },
+      { k: "libelle", label: "Libellé standard", type: "textarea", rows: 2 }
+    ], { code: "F1", niveau: (l.sousNiveaux[0] || "").toUpperCase(), discipline: fiche().discipline, typeCours: fiche().typeCours }, vals => {
+      if (!vals.libelle) return toast("Libellé vide");
+      const noms = { F1: "MUSICALITÉ", F2: "APPUIS", F3: "CONNEXION", F4: "RESPIRATION" };
+      state.ref.objectifsCaches.push({
+        n: String(state.ref.objectifsCaches.length + 1), code: vals.code, fondamental: noms[vals.code],
+        niveau: vals.niveau, discipline: vals.discipline, typeCours: vals.typeCours,
+        libelle: vals.libelle, affiche: "[" + vals.niveau + "] " + vals.libelle
+      });
+      sauver(true); vueReferentiel(); toast("Objectif ajouté");
+    });
+  };
+  const ao = $("#addOutil", v);
+  if (ao) ao.onclick = () => ouvrirForm("Nouvel outil pédagogique",
+    [{ k: "libelle", label: "Libellé", type: "text" }], {}, vals => {
+      if (!vals.libelle) return;
+      state.ref.outils.push({ n: String(state.ref.outils.length + 1), libelle: vals.libelle });
+      sauver(true); vueReferentiel(); toast("Outil ajouté");
+    });
+  const as = $("#addSupport", v);
+  if (as) as.onclick = () => editerSupport(-1);
+}
+
+function editerSupport(i) {
+  const l = state.ref.listes;
+  const s = i >= 0 ? state.ref.supports[i] : { famille: "", figure: "", timing: l.timings[0] || "", sortie: "", bras: "", croise: "", tours: "", style: "", niveau: "" };
+  const familles = uniq(state.ref.supports.map(x => x.famille).filter(Boolean));
+  const niveaux = uniq(l.sousNiveaux.concat(l.cycles).filter(Boolean));
+  ouvrirForm(i >= 0 ? "Modifier le support chorégraphique" : "Nouveau support chorégraphique", [
+    { k: "famille", label: "Famille chorégraphique", type: "select", options: familles, vide: true },
+    { k: "familleLibre", label: "…ou nouvelle famille", type: "text" },
+    { k: "figure", label: "Figure / Exemple", type: "text" },
+    { k: "timing", label: "Timing", type: "text" },
+    { k: "sortie", label: "Sortie / Appuis", type: "text" },
+    { k: "bras", label: "Bras / Connexion", type: "text" },
+    { k: "croise", label: "Croisé", type: "text" },
+    { k: "tours", label: "Tours", type: "text" },
+    { k: "style", label: "Style", type: "text" },
+    { k: "niveau", label: "Niveau envisagé", type: "select", options: niveaux, vide: true }
+  ], s, vals => {
+    if (!vals.figure) return toast("La figure est obligatoire");
+    const obj = {
+      n: i >= 0 ? s.n : String(state.ref.supports.length + 1),
+      famille: vals.familleLibre || vals.famille, figure: vals.figure, timing: vals.timing,
+      sortie: vals.sortie, bras: vals.bras, croise: vals.croise, tours: vals.tours,
+      style: vals.style, niveau: vals.niveau
+    };
+    obj.resultat = composeSupport(obj);
+    if (i >= 0) state.ref.supports[i] = obj; else state.ref.supports.push(obj);
+    sauver(true); vueReferentiel(); toast("Support enregistré");
+  });
+}
+
+/* ============================ Vue : notice ============================ */
+function vueNotice() {
+  const n = REF.notice;
+  const html = n.map(l => {
+    if (/^[A-ZÀ-Ü].{3,60}$/.test(l) && !l.startsWith("•") && !/^\d\./.test(l) && l === l.replace(/[.:]$/, ""))
+      return `<h3>${esc(l)}</h3>`;
+    return `<p>${esc(l)}</p>`;
+  }).join("");
+  $("#view-notice").innerHTML = `
+  <div class="card notice-text">
+    <h2>Notice — reprise du classeur d'origine</h2>
+    ${html}
+  </div>
+  <div class="card notice-text">
+    <h2>Prise en main de l'application</h2>
+    <h3>Où sont mes données ?</h3>
+    <p>Tout est stocké <b>dans ce navigateur, sur ce poste</b> : rien n'est envoyé sur Internet.
+       Utilisez <b>Sauvegarder</b> pour écrire un fichier <code>.json</code> (à ranger à côté du classeur Excel)
+       et <b>Restaurer</b> pour le relire — sur ce poste ou sur un autre.</p>
+    <h3>Une fiche = un cours</h3>
+    <p>Une fiche correspond à 1 professeur × 1 discipline × 1 type de cours × 1 cycle, sur 40 semaines / 10 mois.
+       Pour un autre cours, cliquez <b>+ Fiche</b> (grille vierge) ou <b>Dupliquer</b> (repart du contenu de la fiche active).</p>
+    <h3>Saisir la grille</h3>
+    <p>Cliquez dans une cellule pour écrire librement, ou utilisez le bouton <b>▾</b> qui ouvre le référentiel
+       filtré sur le fondamental et le sous-niveau du mois. Comme dans le classeur, la liste propose mais n'impose pas :
+       vous pouvez choisir une valeur puis la retoucher.</p>
+    <h3>Préparer et suivre un cours</h3>
+    <p>L'onglet <b>Calendrier</b> date les 40 séances à partir de la rentrée, en sautant les vacances.
+       L'onglet <b>Séance</b> affiche la fiche d'un cours (objectifs cachés, objectif affiché, outils, réalisé),
+       imprimable en A4 pour l'emporter en salle.</p>
+    <h3>Impression</h3>
+    <p>Le bouton <b>Imprimer</b> s'adapte à la vue : la grille annuelle sort en <b>A3 paysage sur une page</b>
+       (comme le classeur), la fiche de séance en A4 portrait.</p>
+    <h3>Exports</h3>
+    <p>Depuis la grille : <b>Exporter vers Excel</b> (fichier <code>.xls</code> qui conserve les couleurs et la mise en page)
+       ou <b>CSV</b>. Depuis le calendrier : <b>.ics</b> pour l'importer dans un agenda.</p>
+  </div>`;
+}
+
+/* ============================ Exports ============================ */
+function telecharger(nom, contenu, mime) {
+  // BOM UTF-8 pour les formats ouverts par Excel, pas pour .ics ni .json
+  const bom = /\.(csv|xls)$/i.test(nom) ? "\ufeff" : "";
+  const blob = new Blob([bom + contenu], { type: mime || "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = nom;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function nomFichier(f, ext) {
+  return "SALSABOR_" + (f.nom || "fiche").replace(/[^\wÀ-ÿ -]/g, "").replace(/\s+/g, "_") + "_" + f.annee.replace("/", "-") + ext;
+}
+
+function exporterCsv() {
+  const f = fiche();
+  const q = s => '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"';
+  const lignes = [];
+  lignes.push(["Semaine", "Champ"].concat(f.mois.map((m, i) => `Mois ${i + 1} — ${m}`)).map(q).join(";"));
+  lignes.push([q(""), q("Sous-niveau")].concat(f.sousNiveaux.map(q)).join(";"));
+  lignes.push([q(""), q("Objectifs prioritaires du mois")].concat(f.objectifsPrioritaires.map(q)).join(";"));
+  for (const sem of SEMAINES) for (const ch of CHAMPS) {
+    lignes.push([q(sem), q(ch.label)].concat(f.mois.map((_, m) => q(cellule(m, sem)[ch.code]))).join(";"));
+  }
+  telecharger(nomFichier(f, ".csv"), lignes.join("\r\n"), "text/csv;charset=utf-8");
+  toast("CSV exporté");
+}
+
+function exporterXls() {
+  const f = fiche();
+  const COL = { cache: "#ECEEF1", affiche: "#E3EEFB", outil: "#E6F3E8", realise: "#FDF5DA" };
+  let h = `<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8">
+  <style>td,th{border:.5pt solid #999;vertical-align:top;font-family:Calibri;font-size:9pt;padding:3px}
+  th{background:#DFE3E9;font-weight:bold}</style></head><body>
+  <table><tr><td colspan="12" style="font-size:13pt;font-weight:bold;background:#8C1D3F;color:#fff">${esc(REF.ficheModele.titre)}</td></tr>
+  <tr><td colspan="12">Professeur : ${esc(f.professeur)} | Discipline : ${esc(f.discipline)} | Type de cours : ${esc(f.typeCours)} | Cycle : ${esc(f.cycle)} | Timing : ${esc(f.timing)} | Année scolaire : ${esc(f.annee)} | Mise à jour : ${esc(frDate(f.maj))}</td></tr>
+  <tr><th>SEMAINE</th><th>Champ</th>${f.mois.map((m, i) => `<th>Mois ${i + 1} — ${esc(m)}</th>`).join("")}</tr>
+  <tr><td></td><th>Sous-niveau</th>${f.sousNiveaux.map(s => `<td style="background:#F6E9EE;text-align:center;font-weight:bold">${esc(s)}</td>`).join("")}</tr>
+  <tr><td></td><th>Objectifs prioritaires du mois</th>${f.objectifsPrioritaires.map(s => `<td>${esc(s).replace(/\n/g, "<br>")}</td>`).join("")}</tr>`;
+  for (const sem of SEMAINES) for (const ch of CHAMPS) {
+    h += `<tr><td style="text-align:center;font-weight:bold">${sem}</td><th style="background:${COL[ch.classe] || "#DFE3E9"}">${esc(ch.label)}</th>`;
+    for (let m = 0; m < 10; m++) {
+      h += `<td style="background:${COL[ch.classe] || "#fff"}">${esc(cellule(m, sem)[ch.code]).replace(/\n/g, "<br>")}</td>`;
+    }
+    h += `</tr>`;
+  }
+  h += `</table></body></html>`;
+  telecharger(nomFichier(f, ".xls"), h, "application/vnd.ms-excel;charset=utf-8");
+  toast("Fichier Excel exporté");
+}
+
+function exporterCalendrierCsv() {
+  const f = fiche();
+  const q = s => '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"';
+  const l = [["N°", "Date", "Jour", "Heure", "Lieu", "Mois", "Semaine", "Sous-niveau", "F5 (affiché)", "F1", "F2", "F3", "F4", "Outil 1", "Outil 2", "Outil 3", "Réalisé"].map(q).join(";")];
+  seances(f).forEach(s => {
+    const c = cellule(s.mois, s.sem);
+    l.push([s.i + 1, s.date ? frDate(s.date) : "", s.date ? JOURS[new Date(s.date + "T12:00:00").getDay()] : "",
+      f.calendrier.heure, f.calendrier.lieu, s.moisNom, s.sem, s.sousNiveau,
+      c.F5, c.F1, c.F2, c.F3, c.F4, c.O1, c.O2, c.O3, (c.fait ? "OUI " : "") + (c.realise || "")].map(q).join(";"));
+  });
+  telecharger(nomFichier(f, "_calendrier.csv"), l.join("\r\n"), "text/csv;charset=utf-8");
+  toast("Calendrier exporté");
+}
+
+function exporterIcs() {
+  const f = fiche();
+  const list = seances(f).filter(s => s.date);
+  if (!list.length) return toast("Générez d'abord le calendrier");
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  const hh = (f.calendrier.heure || "19:30").split(":");
+  const pad = n => String(n).padStart(2, "0");
+  const lignes = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//SALSABOR//Programmation//FR", "CALSCALE:GREGORIAN"];
+  list.forEach(s => {
+    const d = new Date(s.date + "T00:00:00");
+    d.setHours(+hh[0] || 19, +hh[1] || 30, 0, 0);
+    const fin = new Date(d.getTime() + (f.calendrier.duree || 60) * 60000);
+    const fmt = x => x.getFullYear() + pad(x.getMonth() + 1) + pad(x.getDate()) + "T" + pad(x.getHours()) + pad(x.getMinutes()) + "00";
+    const c = cellule(s.mois, s.sem);
+    const desc = [
+      "Sous-niveau : " + s.sousNiveau,
+      "F5 (affiché) : " + (c.F5 || "—"),
+      "F1 : " + (c.F1 || "—"), "F2 : " + (c.F2 || "—"),
+      "F3 : " + (c.F3 || "—"), "F4 : " + (c.F4 || "—"),
+      "Outils : " + [c.O1, c.O2, c.O3].filter(Boolean).join(" / ")
+    ].join("\\n");
+    lignes.push("BEGIN:VEVENT",
+      "UID:" + f.id + "-" + s.i + "@salsabor",
+      "DTSTAMP:" + stamp,
+      "DTSTART:" + fmt(d), "DTEND:" + fmt(fin),
+      "SUMMARY:" + icsEsc(`${f.discipline} ${f.typeCours} ${f.cycle} — ${s.moisNom} ${s.sem}`),
+      "DESCRIPTION:" + icsEsc(desc),
+      f.calendrier.lieu ? "LOCATION:" + icsEsc(f.calendrier.lieu) : "",
+      "END:VEVENT");
+  });
+  lignes.push("END:VCALENDAR");
+  telecharger(nomFichier(f, ".ics"), lignes.filter(Boolean).map(plierIcs).join("\r\n"), "text/calendar;charset=utf-8");
+  toast("Agenda .ics exporté");
+}
+function icsEsc(s) { return String(s).replace(/([,;])/g, "\\$1"); }
+/* RFC 5545 : replier les lignes à 75 octets, les suites commençant par une espace. */
+function plierIcs(ligne) {
+  const enc = new TextEncoder();
+  if (enc.encode(ligne).length <= 75) return ligne;
+  const out = []; let cur = "", lim = 75;
+  for (const ch of ligne) {
+    if (enc.encode(cur + ch).length > lim) { out.push(cur); cur = " "; lim = 74; }
+    cur += ch;
+  }
+  if (cur.trim()) out.push(cur);
+  return out.join("\r\n");
+}
+
+/* ============================ Fiches ============================ */
+function majSelecteurFiches() {
+  const sel = $("#selFiche");
+  sel.innerHTML = state.fiches.map(f =>
+    `<option value="${f.id}"${f.id === state.ficheActive ? " selected" : ""}>${esc(f.nom)} — ${esc(f.annee)}</option>`).join("");
+}
+
+function champsEntete(f) {
+  const l = state.ref.listes;
+  return [
+    { k: "nom", label: "Nom de la fiche", type: "text", aide: "Convention : Discipline + Type de cours + Niveau" },
+    { k: "professeur", label: "Professeur (Nom Prénom)", type: "text" },
+    { k: "discipline", label: "Discipline", type: "select", options: l.disciplines },
+    { k: "typeCours", label: "Type de cours", type: "select", options: l.typesCours },
+    { k: "cycle", label: "Cycle / Niveau", type: "select", options: l.cycles },
+    { k: "annee", label: "Année scolaire", type: "text" },
+    { k: "timing", label: "Timing retenu", type: "select", options: l.timings, vide: true }
+  ];
+}
+
+function nouvelleFiche() {
+  const f0 = fiche();
+  ouvrirForm("Nouvelle fiche de programmation",
+    champsEntete().concat([{
+      k: "base", label: "Contenu de départ", type: "select",
+      options: ["Grille vierge", "Modèle Mambo Couple Débutant", "Copie de la fiche active"]
+    }]),
+    { nom: "", professeur: f0.professeur, discipline: f0.discipline, typeCours: f0.typeCours, cycle: f0.cycle, annee: f0.annee, timing: f0.timing, base: "Grille vierge" },
+    vals => {
+      let f;
+      if (vals.base === "Modèle Mambo Couple Débutant") f = ficheModele(vals);
+      else if (vals.base === "Copie de la fiche active") { f = clone(f0); f.id = uid(); }
+      else f = ficheVierge(vals);
+      Object.assign(f, {
+        nom: vals.nom || (vals.discipline + " " + vals.typeCours + " " + vals.cycle),
+        professeur: vals.professeur, discipline: vals.discipline, typeCours: vals.typeCours,
+        cycle: vals.cycle, annee: vals.annee, timing: vals.timing, maj: todayIso()
+      });
+      state.fiches.push(f); state.ficheActive = f.id;
+      sauver(true); majSelecteurFiches(); rendre(); toast("Fiche créée");
+    });
+}
+
+function modifierEntete() {
+  const f = fiche();
+  ouvrirForm("En-tête de la fiche", champsEntete(f), f, vals => {
+    Object.assign(f, vals, { maj: todayIso() });
+    if (!f.nom) f.nom = f.discipline + " " + f.typeCours + " " + f.cycle;
+    sauver(true); majSelecteurFiches(); rendre(); toast("En-tête mis à jour");
+  });
+}
+
+/* ============================ Navigation & impression ============================ */
+function allerA(v) {
+  vueCourante = v;
+  $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === v));
+  $$(".view").forEach(s => s.hidden = s.id !== "view-" + v);
+  rendre();
+}
+
+function rendre() {
+  if (vueCourante === "dashboard") vueDashboard();
+  else if (vueCourante === "grille") vueGrille();
+  else if (vueCourante === "seance") vueSeance();
+  else if (vueCourante === "calendrier") vueCalendrier();
+  else if (vueCourante === "referentiel") vueReferentiel();
+  else vueNotice();
+}
+
+let styleImpression = null;
+const MM = 96 / 25.4;                       // pixels CSS par millimètre
+
+function preparerImpression() {
+  if (!styleImpression) {
+    styleImpression = document.createElement("style");
+    document.head.appendChild(styleImpression);
+  }
+  const zone = $("#printZone");
+  zone.innerHTML = "";
+  document.body.classList.remove("print-zone");
+
+  if (vueCourante === "grille") {
+    styleImpression.textContent = "@media print{@page{size:A3 landscape; margin:7mm}}";
+    constuirePagesGrille(406, 283);          // A3 paysage moins les marges
+    document.body.classList.add("print-zone");
+  } else {
+    styleImpression.textContent = "@media print{@page{size:A4 portrait; margin:12mm}}";
+  }
+}
+
+/* Prépare la version imprimée de la grille : 1 ou 2 pages, mise à l'échelle
+   pour tenir dans la zone imprimable. */
+function constuirePagesGrille(largeurMm, hauteurMm) {
+  const f = fiche();
+  const zone = $("#printZone");
+  const decoupe = state.impression === "1page"
+    ? [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
+    : [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]];
+
+  const W = largeurMm * MM, H = hauteurMm * MM;
+  const entete = n => `<div class="print-head">
+      <h1>${esc(REF.ficheModele.titre)}</h1>
+      <p>Professeur : <b>${esc(f.professeur || "—")}</b> · Discipline : <b>${esc(f.discipline)}</b> ·
+         Type de cours : <b>${esc(f.typeCours)}</b> · Cycle : <b>${esc(f.cycle)}</b> ·
+         Timing : <b>${esc(f.timing || "—")}</b> · Année scolaire : <b>${esc(f.annee)}</b> ·
+         Mise à jour : <b>${esc(frDate(f.maj))}</b>${decoupe.length > 1 ? ` · <b>Page ${n}/${decoupe.length}</b>` : ""}</p>
+    </div>`;
+
+  zone.innerHTML = decoupe.map((mois, i) => `
+    <div class="page"><div class="inner" style="width:${W}px">
+      ${entete(i + 1)}${tableGrilleHtml(f, mois, false)}
+      <p class="print-legend">F1–F4 : objectifs cachés (professeur) · F5 : objectif affiché aux élèves ·
+         Outils pédagogiques · Réalisé + commentaires · S4 : semaine de révision —
+         document interne confidentiel.</p>
+    </div></div>`).join("");
+
+  // La zone est masquée à l'écran : on la déplie hors champ le temps de mesurer.
+  zone.style.cssText = "display:block;position:absolute;left:-20000px;top:0";
+  $$(".page", zone).forEach(page => {
+    const inner = $(".inner", page);
+    inner.style.transformOrigin = "top left";
+    // On cherche l'échelle qui remplit la largeur ET tient en hauteur : élargir
+    // la mise en page réduit les retours à la ligne, donc la hauteur — d'où
+    // quelques itérations avant de converger.
+    let k = 1, h = 0;
+    for (let i = 0; i < 5; i++) {
+      inner.style.transform = "none";
+      inner.style.width = (W / k) + "px";
+      h = inner.scrollHeight;
+      const k2 = Math.min(1, H / h);
+      if (Math.abs(k2 - k) < 0.004) { k = k2; break; }
+      k = k2;
+    }
+    inner.style.width = (W / k) + "px";
+    inner.style.transform = "scale(" + k + ")";
+    page.style.height = Math.ceil(h * k) + "px";
+    page.style.width = Math.ceil(W) + "px";
+  });
+  zone.style.cssText = "";
+}
+
+/* ============================ Sauvegarde fichier ============================ */
+function exporterJson() {
+  const nom = "SALSABOR_programmation_" + todayIso() + ".json";
+  telecharger(nom, JSON.stringify(state, null, 1), "application/json;charset=utf-8");
+  toast("Sauvegarde écrite : " + nom);
+}
+function importerJson(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const s = JSON.parse(fr.result.replace(/^﻿/, ""));
+      if (!s || !Array.isArray(s.fiches)) throw new Error("format");
+      if (!confirm("Remplacer les données actuelles par le contenu de « " + file.name + " » ?\n" +
+        s.fiches.length + " fiche(s) seront restaurées.")) return;
+      state = s;
+      if (!state.ref) state.ref = etatInitial().ref;
+      if (!state.fiches.find(f => f.id === state.ficheActive)) state.ficheActive = state.fiches[0].id;
+      sauver(true); majSelecteurFiches(); seanceSel = null; rendre(); toast("Sauvegarde restaurée");
+    } catch (e) {
+      alert("Ce fichier n'est pas une sauvegarde SALSABOR valide.");
+    }
+  };
+  fr.readAsText(file, "utf-8");
+}
+
+/* ============================ Démarrage ============================ */
+function init() {
+  state = charger();
+  majSelecteurFiches();
+
+  $("#selFiche").onchange = e => { state.ficheActive = e.target.value; seanceSel = null; sauver(true); rendre(); };
+  $("#btnNouvelleFiche").onclick = nouvelleFiche;
+  $("#btnRenommer").onclick = modifierEntete;
+  $("#btnDupliquer").onclick = () => {
+    const f = clone(fiche());
+    f.id = uid(); f.nom = f.nom + " (copie)"; f.maj = todayIso();
+    state.fiches.push(f); state.ficheActive = f.id;
+    sauver(true); majSelecteurFiches(); rendre(); toast("Fiche dupliquée");
+  };
+  $("#btnSupprimer").onclick = () => {
+    if (state.fiches.length === 1) return toast("Impossible de supprimer la dernière fiche");
+    const f = fiche();
+    if (!confirm("Supprimer définitivement la fiche « " + f.nom + " » ?")) return;
+    state.fiches = state.fiches.filter(x => x.id !== f.id);
+    state.ficheActive = state.fiches[0].id;
+    sauver(true); majSelecteurFiches(); seanceSel = null; rendre(); toast("Fiche supprimée");
+  };
+  $("#btnExportJson").onclick = exporterJson;
+  $("#btnImportJson").onclick = () => $("#fileImport").click();
+  $("#fileImport").onchange = e => { if (e.target.files[0]) importerJson(e.target.files[0]); e.target.value = ""; };
+  $("#btnImprimer").onclick = () => { preparerImpression(); setTimeout(() => window.print(), 60); };
+
+  $$(".tab").forEach(t => t.onclick = () => allerA(t.dataset.view));
+
+  $("#pickerClose").onclick = fermerPicker;
+  $("#pickerCancel").onclick = fermerPicker;
+  $("#pickerOk").onclick = validerPicker;
+  $("#pickerClear").onclick = () => { $("#pickerFree").value = ""; validerPicker(); };
+  $("#pickerSearch").oninput = rendrePickerList;
+  $("#picker").onclick = e => { if (e.target.id === "picker") fermerPicker(); };
+
+  $("#formClose").onclick = () => { $("#formModal").hidden = true; formCtx = null; };
+  $("#formCancel").onclick = () => { $("#formModal").hidden = true; formCtx = null; };
+  $("#formOk").onclick = validerForm;
+  $("#formModal").onclick = e => { if (e.target.id === "formModal") { $("#formModal").hidden = true; formCtx = null; } };
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { fermerPicker(); $("#formModal").hidden = true; formCtx = null; }
+    if (e.key === "Enter" && !$("#formModal").hidden && e.target.tagName !== "TEXTAREA") validerForm();
+    if ((e.metaKey || e.ctrlKey) && e.key === "p") preparerImpression();
+    if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); sauver(true); toast("Enregistré"); }
+  });
+  window.addEventListener("beforeprint", preparerImpression);
+
+  rendre();
+  sauver(true);
+}
+
+document.addEventListener("DOMContentLoaded", init);
+})();
+
+</script>
+</body>
+</html>
