@@ -315,11 +315,21 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
                  print-color-adjust:exact; -webkit-print-color-adjust:exact}
 #printZone .page::after{content:""; position:absolute; inset:0; pointer-events:none;
                         background-repeat:repeat; background-position:center}
-#printZone .inner{background:#fff}
+#printZone .inner{background:#fff; width:auto; max-width:100%}
+/* Si la zone imprimable est plus petite que prévu, la grille déborde sur une
+   page de plus plutôt que d'être coupée : les en-têtes se répètent et aucune
+   ligne n'est tranchée en deux. */
+#printZone thead{display:table-header-group}
+#printZone tr{break-inside:avoid}
 #printZone .print-head h1{font-size:11pt; margin:0 0 2pt}
 #printZone .print-head p{font-size:7.5pt; margin:0 0 4pt; color:#333}
 #printZone .print-legend{font-size:6.5pt; color:#555; margin:4pt 0 0}
 #printZone table.grille{font-size:7pt; table-layout:fixed; width:100%}
+/* Largeur des colonnes de mois laissée libre : figées à 190 px, les dix mois
+   réclamaient 2104 px et le tableau refusait de se réduire sous la largeur
+   disponible — il débordait donc à droite. Elles se partagent maintenant à
+   parts égales ce qui reste après les deux colonnes de tête. */
+#printZone table.grille col.mois{width:auto}
 #printZone table.grille th,#printZone table.grille td{border:.4pt solid #999}
 #printZone table.grille thead th{position:static; padding:3pt 4pt}
 #printZone table.grille th.sem{position:static; width:22px; min-width:22px}
@@ -4674,36 +4684,35 @@ function constuirePagesGrille(largeurMm, hauteurMm) {
     </div></div>`).join("");
 
   // La zone est masquée à l'écran : on la déplie hors champ le temps de mesurer.
-  zone.style.cssText = "display:block;position:absolute;left:-20000px;top:0";
+  zone.style.cssText = "display:block;position:absolute;left:-20000px;top:0;width:" + W + "px";
   $$(".page", zone).forEach(page => {
     const inner = $(".inner", page);
-    inner.style.transformOrigin = "top left";
-    // On cherche l'échelle qui remplit la largeur ET tient en hauteur : élargir
-    // la mise en page réduit les retours à la ligne, donc la hauteur — d'où
-    // quelques itérations avant de converger.
-    let k = 1;
-    for (let i = 0; i < 5; i++) {
-      inner.style.transform = "none";
-      inner.style.width = (W / k) + "px";
-      const k2 = Math.min(1, H / inner.scrollHeight);
-      if (Math.abs(k2 - k) < 0.004) { k = k2; break; }
-      k = k2;
-    }
 
-    // La boîte de la page est fixée d'après la taille RÉELLEMENT rendue, jamais
-    // d'après une prédiction : la dernière largeur essayée modifie les retours à
-    // la ligne, et un écart de quelques pixels suffisait à rogner la dernière
-    // ligne, puisque .page masque ce qui dépasse.
-    let boite;
-    for (let i = 0; i < 4; i++) {
-      inner.style.width = (W / k) + "px";
-      inner.style.transform = "scale(" + k + ")";
-      boite = inner.getBoundingClientRect();
-      if (boite.height <= H) break;
-      k *= H / boite.height;
+    // zoom, et non transform : transform dessine le contenu plus petit à une
+    // largeur figée, si bien que le tableau débordait dès que la zone
+    // imprimable réelle différait de l'A3 supposé — jusqu'à trois mois perdus
+    // à droite. zoom recalcule la mise en page : le tableau remplit toujours
+    // la largeur disponible, quelles que soient les marges retenues.
+    inner.style.width = "";
+    inner.style.zoom = "";
+
+    // Recherche du facteur par dichotomie, sur la hauteur RÉELLEMENT rendue.
+    // getBoundingClientRect tient compte du zoom, scrollHeight non : c'est donc
+    // la première qu'il faut mesurer. Une approximation successive de type
+    // Newton oscillait et pouvait s'arrêter sur une valeur qui déborde ; la
+    // dichotomie, elle, se termine toujours sur une valeur vérifiée.
+    const tient = () => inner.getBoundingClientRect().height <= H;
+    let k = 1;
+    if (!tient()) {
+      let bas = 0.35, haut = 1;                 // bas = plus grande valeur sûre
+      for (let i = 0; i < 12; i++) {
+        const milieu = (bas + haut) / 2;
+        inner.style.zoom = milieu;
+        if (tient()) bas = milieu; else haut = milieu;
+      }
+      k = bas;
     }
-    page.style.height = Math.ceil(boite.height) + 1 + "px";
-    page.style.width = Math.ceil(boite.width) + 1 + "px";
+    inner.style.zoom = k;
   });
   zone.style.cssText = "";
 }
