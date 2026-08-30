@@ -672,19 +672,51 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 
 /* ---------- Impression ---------- */
 @media print{
-  /* Le papier est blanc : on annule le thème de l'écran.
+  /* Le papier est blanc : on annule le thème de l'écran, sans exception.
+     Toutes les variables que le thème sombre redéfinit sont reprises ici —
+     s'en tenir à celles que l'on croit imprimées serait fragile : les
+     pastilles du tableau de bord, par exemple, sortaient en vert sombre.
      « !important » plutôt qu'une surenchère de sélecteurs : la règle du mode
      sombre est plus spécifique que « :root » et, en mode « système », aucun
-     attribut data-theme n'est posé pour s'y raccrocher. Sans cette priorité,
-     un professeur en thème sombre aurait sorti des PDF à fond noir. */
+     attribut data-theme n'est posé pour s'y raccrocher. */
   :root{
-    --bg:#f5f6f8 !important; --panel:#ffffff !important; --ink:#1d2430 !important; --ink-soft:#5b6675 !important;
-    --line:#d9dee6 !important; --line-strong:#b9c2ce !important; --accent:#8c1d3f !important; --accent-soft:#f6e9ee !important;
-    --cache:#eceef1 !important; --cache-head:#dfe3e9 !important; --affiche:#e3eefb !important; --affiche-head:#cfe0f5 !important;
-    --outil:#e6f3e8 !important; --outil-head:#d2e8d7 !important; --realise:#fdf5da !important; --realise-head:#f7ead0 !important;
-    --revision:#f3e8f4 !important; --ok:#1f7a45 !important; --warn:#a8600a !important;
-    --sur-accent:#ffffff !important; --champ:#ffffff !important; --survol:#f0f2f5 !important; --rayure:#fafbfc !important;
-    --placeholder:#aab2bd !important; --filigrane:#8c1d3f !important;
+    --bg:#f5f6f8 !important;
+    --panel:#ffffff !important;
+    --ink:#1d2430 !important;
+    --ink-soft:#5b6675 !important;
+    --line:#d9dee6 !important;
+    --line-strong:#b9c2ce !important;
+    --accent:#8c1d3f !important;
+    --accent-soft:#f6e9ee !important;
+    --cache:#eceef1 !important;
+    --cache-head:#dfe3e9 !important;
+    --affiche:#e3eefb !important;
+    --affiche-head:#cfe0f5 !important;
+    --outil:#e6f3e8 !important;
+    --outil-head:#d2e8d7 !important;
+    --realise:#fdf5da !important;
+    --realise-head:#f7ead0 !important;
+    --revision:#f3e8f4 !important;
+    --ok:#1f7a45 !important;
+    --warn:#a8600a !important;
+    --sur-accent:#ffffff !important;
+    --champ:#ffffff !important;
+    --survol:#f0f2f5 !important;
+    --rayure:#fafbfc !important;
+    --placeholder:#aab2bd !important;
+    --ok-soft:#e3f2e8 !important;
+    --warn-soft:#fbf0dd !important;
+    --danger:#8c1111 !important;
+    --danger-line:#e3bcbc !important;
+    --danger-soft:#fbeaea !important;
+    --avis-bg:#fbf0dd !important;
+    --avis-line:#ecd9b4 !important;
+    --avis-ink:#7a4a08 !important;
+    --toast-bg:#1d2430 !important;
+    --toast-ink:#ffffff !important;
+    --voile:rgba(20,26,36,.45) !important;
+    --filigrane:#8c1d3f !important;
+    --shadow:0 1px 2px rgba(20,28,40,.06), 0 4px 14px rgba(20,28,40,.06) !important;
     color-scheme:light !important;
   }
   .no-print,.topbar,.tabs,.footer,.cell .pick,.toolbar,.done-flag input,
