@@ -266,13 +266,22 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 }
 
 /* ---------- Fiche de séance imprimée ---------- */
-#printZone .page.a4 .inner{width:186mm}
+/* Aucune largeur en dur : la fiche s'adapte à la zone imprimable réelle, quelles
+   que soient les marges choisies dans la fenêtre d'impression. Une largeur figée
+   à 186 mm supposait des marges de 12 mm ; avec les marges par défaut de macOS
+   (25,4 mm), toute la bande de droite était coupée. */
+#printZone .page.a4{width:auto}
+#printZone .page.a4 .inner{width:auto; max-width:100%}
 .seance-print{font-size:9.5pt; line-height:1.35; color:#1d2430}
 .seance-print .sp-head{border-bottom:2pt solid #8c1d3f; padding-bottom:5pt; margin-bottom:8pt;
-                       display:flex; justify-content:space-between; gap:10mm; align-items:flex-start}
+                       display:flex; flex-wrap:wrap; justify-content:space-between; gap:3mm 8mm;
+                       align-items:flex-start}
+.seance-print .sp-head>div{min-width:0}
+.seance-print .sp-head>div:first-child{flex:1 1 58%}
 .seance-print .sp-head h1{font-size:14pt; margin:0 0 2pt}
 .seance-print .sp-head p{margin:0; font-size:8.5pt; color:#4a5563}
-.seance-print .sp-head .sp-right{text-align:right; white-space:nowrap}
+/* jamais nowrap : la valeur du timing est longue et ne pouvait pas se replier */
+.seance-print .sp-head .sp-right{text-align:right; white-space:normal; flex:0 1 auto}
 .seance-print .sp-bloc{border:.5pt solid #b9c2ce; border-radius:2pt; margin-bottom:5pt; break-inside:avoid}
 .seance-print .sp-bloc>h2{margin:0; padding:3pt 6pt; font-size:7.5pt; text-transform:uppercase;
                           letter-spacing:.6pt; font-weight:700; border-bottom:.5pt solid #b9c2ce}
@@ -284,18 +293,25 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 .seance-print .sp-realise>h2{background:#f7ead0} .seance-print .sp-realise{background:#fdf5da}
 .seance-print .sp-realise>div{min-height:34mm}
 .seance-print .sp-prio>h2{background:#f6e9ee; color:#8c1d3f}
-.seance-print .sp-duo{display:grid; grid-template-columns:1fr 1fr; gap:5pt; break-inside:avoid}
-.seance-print .sp-trio{display:grid; grid-template-columns:1fr 1fr 1fr; gap:5pt; break-inside:avoid}
+/* minmax(0,1fr) et non 1fr : « 1fr » vaut minmax(auto,1fr) et refuse de
+   descendre sous la largeur du contenu, ce qui faisait déborder les colonnes. */
+.seance-print .sp-duo{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5pt; break-inside:avoid}
+.seance-print .sp-trio{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5pt; break-inside:avoid}
 .seance-print .sp-bloc>div{overflow-wrap:break-word; word-break:normal; hyphens:none}
 .seance-print .sp-pied{margin-top:7pt; padding-top:4pt; border-top:.5pt solid #b9c2ce;
-                       font-size:7.5pt; color:#4a5563; display:flex; justify-content:space-between}
+                       font-size:7.5pt; color:#4a5563; display:flex; flex-wrap:wrap;
+                       justify-content:space-between; gap:1mm 6mm}
+.seance-print .sp-pied>span{min-width:0; overflow-wrap:break-word}
 .seance-print .sp-pied b{color:#8c1d3f}
 
 /* ---------- Zone d'impression dédiée (grille annuelle) ---------- */
 #printZone{display:none}
 /* Le filigrane est posé EN SURIMPRESSION : en arrière-plan, il serait masqué
    par les fonds opaques du contenu. Le motif est injecté par poserFiligrane(). */
-#printZone .page{overflow:hidden; position:relative;
+/* Pas de overflow:hidden : il amputait silencieusement ce qui dépassait.
+   Les boîtes sont dimensionnées d'après le contenu réellement rendu, et ce
+   qui déborderait malgré tout doit se voir plutôt que disparaître. */
+#printZone .page{position:relative;
                  print-color-adjust:exact; -webkit-print-color-adjust:exact}
 #printZone .page::after{content:""; position:absolute; inset:0; pointer-events:none;
                         background-repeat:repeat; background-position:center}
