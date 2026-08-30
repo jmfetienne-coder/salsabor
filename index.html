@@ -356,15 +356,39 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 /* de la place pour annoter à la main après le cours */
 #printZone td.realise .cell,#printZone td.realise .cell .txt{min-height:24px}
 
-/* ---------- Téléphone ----------
-   Le sélecteur de mois n'apparaît que sur petit écran ; sur grand écran la
-   grille montre les dix mois et le sélecteur n'aurait pas de sens.           */
 .mois-mobile{display:none}
 /* Sur grand écran, les actions secondaires sont toutes visibles et la bascule
    n'a pas lieu d'être. Sur petit écran, elles se replient : rien n'est retiré,
    seulement mis à un clic. */
 .bascule-plus{display:none}
 .toolbar .secondaire{display:contents}
+
+/* ---------- Tablette et fenêtres étroites ----------
+   Entre 760 et 1100 px, la grille garde ses dix mois — le défilement latéral
+   avec colonnes figées y est confortable — mais les barres, elles, prenaient
+   406 px de haut sur les 1024 d'un iPad. On les resserre.                    */
+@media (max-width:1100px){
+  .brand p{display:none}
+  .fiche-picker label{display:none}
+  #selFiche{max-width:190px}
+  .topbar .btn{padding:6px 10px; font-size:13px}
+
+  .aide-souris{display:none}
+  .detail-fiche{display:none}
+  .toolbar .btn.small{padding:6px 10px}
+
+  /* Une seule rangée d'outils : le libellé du menu s'efface et les actions
+     secondaires passent derrière « ⋯ ». Rien n'est retiré. */
+  .bascule-plus{display:inline-block; font-weight:700; letter-spacing:1px}
+  .toolbar .secondaire{display:none}
+  .toolbar.ouvert .secondaire{display:contents}
+  .lab-impression span{display:none}
+  #gMiseEnPage{max-width:190px}
+}
+
+/* ---------- Téléphone ----------
+   Le sélecteur de mois n'apparaît que sur petit écran ; sur grand écran la
+   grille montre les dix mois et le sélecteur n'aurait pas de sens.           */
 
 @media (max-width:760px){
   body{font-size:15px}

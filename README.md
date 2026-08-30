@@ -59,6 +59,12 @@ Pour l'avoir sous la main comme une application, dans Safari :
 **Partager → Sur l'écran d'accueil**. Elle s'ouvre alors en plein écran, avec
 son icône, et retrouve vos fiches.
 
+## Sur tablette
+
+La grille y garde ses dix mois : on fait glisser le tableau latéralement, les
+colonnes **SEM.** et **Champ** restant figées à gauche. Sur un iPad mini, plus
+étroit, l'affichage passe à deux mois à la fois, sans défilement.
+
 ## Hors ligne
 
 L'application tient dans une seule page. Enregistrez-la
