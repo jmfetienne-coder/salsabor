@@ -11,7 +11,7 @@ d'un cours de danse : **40 semaines réparties sur 10 mois**, de septembre à ju
 |---|---|
 | **Tableau de bord** | Avancement de la fiche, progression mois par mois, prochaine séance. |
 | **Grille annuelle** | La fiche complète : 10 mois × 4 semaines × 9 champs. |
-| **Séance** | La fiche d'un cours, imprimable en A4 pour l'emporter en salle. |
+| **Séance** | La fiche d'un cours, à imprimer ou exporter en PDF A4 pour l'emporter en salle. |
 | **Calendrier** | Date les 40 séances à partir de la rentrée, vacances déduites. Export `.ics`. |
 | **Référentiel** | Objectifs, supports chorégraphiques et outils pédagogiques, éditables. |
 | **Notice** | Mode d'emploi. |
@@ -48,8 +48,16 @@ L'application tient dans une seule page. Enregistrez-la
 (**Fichier → Enregistrer sous…**) et elle fonctionnera par double-clic, sans
 connexion.
 
-## Impression
+## Impression et PDF
 
 Grille annuelle en A3 paysage — 2 pages, ou 1 page réduite ; fiche de séance en
-A4 portrait. Dans la boîte de dialogue d'impression, pensez à cocher
-l'impression des arrière-plans, sans quoi le code couleur disparaît.
+A4 portrait.
+
+L'onglet **Séance** porte un bouton **Exporter en PDF** : il ouvre la fenêtre
+d'impression, où il faut choisir **« Enregistrer au format PDF »**. Le PDF
+obtenu est vectoriel, son texte reste sélectionnable.
+
+---
+
+*Conception et contenu pédagogique : Jean-Michel Etienne. Toutes les vues
+portent la mention « version JM ETIENNE ».*
