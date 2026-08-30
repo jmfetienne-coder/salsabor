@@ -2,7 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#8c1d3f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SALSABOR">
 <title>SALSABOR — Programmation annuelle</title>
 <style>
 /* SALSABOR — Programmation annuelle
@@ -201,7 +205,8 @@ th.rowhead-realise{background:var(--realise)}
 .block.outil>h4{background:var(--outil-head)} .block.outil{background:var(--outil)}
 .block.realise>h4{background:var(--realise-head)} .block.realise{background:var(--realise)}
 .block.wide{grid-column:1/-1}
-.block .edit{width:100%; border:0; background:transparent; font:inherit; resize:vertical; padding:9px 10px}
+.block .edit{width:100%; border:0; background:transparent; font:inherit; resize:none;
+             overflow:hidden; padding:9px 10px}
 .block .edit:focus{outline:2px solid var(--accent); outline-offset:-2px}
 
 /* ---------- Tables génériques ---------- */
@@ -350,6 +355,114 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 #printZone .cell .txt{padding:2pt 3pt; line-height:1.2}
 /* de la place pour annoter à la main après le cours */
 #printZone td.realise .cell,#printZone td.realise .cell .txt{min-height:24px}
+
+/* ---------- Téléphone ----------
+   Le sélecteur de mois n'apparaît que sur petit écran ; sur grand écran la
+   grille montre les dix mois et le sélecteur n'aurait pas de sens.           */
+.mois-mobile{display:none}
+
+@media (max-width:760px){
+  body{font-size:15px}
+
+  /* Barre supérieure : deux rangées, la fiche d'abord, les actions ensuite. */
+  .topbar{padding:8px 10px; gap:8px; position:static}
+  .brand p{display:none}
+  .brand h1{font-size:15px}
+  .logo{width:32px; height:32px; border-radius:8px; font-size:13px}
+  .fiche-picker{order:3; width:100%; gap:5px}
+  .fiche-picker label{display:none}
+  #selFiche{flex:1 1 100%; max-width:none; min-width:0}
+  .tools{order:2; margin-left:auto; gap:5px}
+  .topbar .btn{padding:8px 10px; font-size:13px}
+
+  .tabs{position:sticky; top:0; padding:0 6px;
+        -webkit-overflow-scrolling:touch; scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:11px 11px; font-size:13.5px}
+
+  main{padding:10px}
+  .card{padding:12px; border-radius:6px}
+  .grid-cards{grid-template-columns:1fr; gap:10px}
+  .kpi{font-size:26px}
+
+  /* 16 px minimum sur les champs : en deçà, iOS zoome à la mise au point. */
+  select,input,textarea{font-size:16px}
+  .btn{padding:9px 12px}
+  .btn.small{padding:7px 10px; font-size:13.5px}
+
+  .toolbar{gap:6px}
+  .toolbar .spacer{display:none}
+  .aide-souris{display:none}
+  /* Le mois d'abord : c'est le réglage qu'on touche à chaque consultation.
+     Les exports et l'entretien de la fiche viennent après. */
+  .mois-mobile{display:flex; align-items:center; gap:6px; width:100%; order:-2}
+  .mois-mobile select{flex:1; min-width:0}
+  #gPdf{order:-1}
+  .toolbar .btn.ghost.small{padding:6px 9px; font-size:12.5px}
+
+  /* En-tête de la grille : on garde l'identification du cours, on retire le
+     détail que l'on retrouve dans le bandeau supérieur. */
+  .entete-fiche{font-size:11.5px}
+  .detail-fiche{display:none}
+  #view-grille .card h2{font-size:13px}
+
+  /* Grille : un seul mois, colonnes de tête resserrées. */
+  .grille-wrap{max-height:none}
+  table.grille{font-size:13px}
+  table.grille col.csem{width:30px}
+  table.grille col.cchamp{width:96px}
+  table.grille th.sem{width:30px; min-width:30px; font-size:10px}
+  table.grille th.champ{left:30px; width:96px; min-width:96px; font-size:10px; padding:5px 4px}
+  table.grille thead th{font-size:11px; padding:6px 5px}
+  .cell .txt{padding:7px 18px 7px 6px; font-size:13px}
+  .cell .pick{opacity:1; width:20px; height:20px; font-size:11px}
+  .legend{font-size:11px; gap:8px}
+
+  /* Fiche de séance : une seule colonne. */
+  .seance-grid{grid-template-columns:1fr}
+  .seance-sheet{padding:12px}
+  .seance-head{gap:8px; flex-direction:column}
+  .seance-head>div:last-child{text-align:left !important}
+  .seance-head h2{font-size:16px}
+  .block .edit{font-size:15px; resize:none; overflow:hidden}
+
+  /* Calendrier : on retire les colonnes secondaires plutôt que de tout tasser. */
+  #view-calendrier table.data th:nth-child(3),
+  #view-calendrier table.data td:nth-child(3),
+  #view-calendrier table.data th:nth-child(6),
+  #view-calendrier table.data td:nth-child(6){display:none}
+  .fieldrow{grid-template-columns:1fr; gap:4px}
+  .fieldrow label{padding-top:0}
+
+  table.data{font-size:13px}
+  table.data th,table.data td{padding:7px 6px}
+  .table-wrap{max-height:none}
+
+  .subtabs{gap:5px}
+  .subtab{padding:7px 11px; font-size:13px}
+
+  /* Fenêtres de choix : plein écran, la liste doit rester atteignable. */
+  .modal-backdrop{padding:0; align-items:stretch}
+  .modal{width:100%; max-height:100vh; height:100%; border-radius:0}
+  .modal-head{padding:12px 14px}
+  .modal-filters,.modal-list,.modal-free{padding-left:14px; padding-right:14px}
+  #pickerSearch{margin:10px 14px}
+  .opt{padding:11px 10px}
+  .modal-foot{padding:12px 14px; flex-wrap:wrap}
+  .modal-foot .btn{flex:1 1 auto}
+
+  .footer{flex-direction:column; gap:4px}
+  .toast{left:10px; right:10px; transform:none; text-align:center}
+}
+
+/* Très petits écrans : on gagne encore sur les colonnes de tête. */
+@media (max-width:400px){
+  table.grille col.csem{width:24px}
+  table.grille col.cchamp{width:82px}
+  table.grille th.sem{width:24px; min-width:24px}
+  table.grille th.champ{left:24px; width:82px; min-width:82px; font-size:9.5px}
+  .topbar .btn{padding:7px 8px; font-size:12.5px}
+}
 
 /* ---------- Impression ---------- */
 @media print{
@@ -3303,6 +3416,12 @@ const JOURS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"
    Pour le modifier, une seule ligne à changer. */
 const FILIGRANE = "version JM ETIENNE";
 
+/* Sur téléphone, la grille se lit un mois à la fois : douze colonnes sur
+   375 px ne sont pas consultables. Le seuil vaut aussi pour la mise en page. */
+const SEUIL_MOBILE = "(max-width: 760px)";
+const petitEcran = () => window.matchMedia(SEUIL_MOBILE).matches;
+let moisMobile = 0;
+
 /* Motif SVG répété en diagonale, encodé en URI de données. */
 function filigraneMotif(opacite, corps) {
   const l = 380, h = 210, cx = l / 2, cy = h / 2;
@@ -3811,18 +3930,22 @@ function vueGrille() {
         <option value="2pages"${state.impression === "2pages" ? " selected" : ""}>A3 — 2 pages, 5 mois par page (texte plus grand)</option>
         <option value="1page"${state.impression === "1page" ? " selected" : ""}>A3 — 1 page (très réduit)</option>
       </select></label>
+    <label class="mois-mobile" style="font-size:12px;color:var(--ink-soft)">Mois affiché
+      <select id="gMois" style="font-size:16px">
+        ${f.mois.map((m, i) => `<option value="${i}"${i === moisMobile ? " selected" : ""}>${i + 1}. ${esc(m)}</option>`).join("")}
+      </select></label>
     <span class="spacer"></span>
-    <span class="muted" style="font-size:12px">Cliquez dans une cellule pour saisir · bouton ▾ pour la liste du référentiel</span>
+    <span class="muted aide-souris" style="font-size:12px">Cliquez dans une cellule pour saisir · bouton ▾ pour la liste du référentiel</span>
   </div>
   <div class="card" style="padding:12px">
     <h2 style="margin-bottom:2px">${esc(REF.ficheModele.titre)}</h2>
-    <p class="muted" style="font-size:12px;margin-bottom:10px">
+    <p class="muted entete-fiche" style="font-size:12px;margin-bottom:10px">
       Professeur : <b>${esc(f.professeur || "—")}</b> · Discipline : <b>${esc(f.discipline)}</b> ·
-      Type de cours : <b>${esc(f.typeCours)}</b> · Cycle : <b>${esc(f.cycle)}</b> ·
+      Type de cours : <b>${esc(f.typeCours)}</b> · Cycle : <b>${esc(f.cycle)}</b><span class="detail-fiche"> ·
       Timing : <b>${esc(f.timing || "—")}</b> · Année scolaire : <b>${esc(f.annee)}</b> ·
-      Dernière mise à jour : <b>${esc(frDate(f.maj))}</b>
+      Dernière mise à jour : <b>${esc(frDate(f.maj))}</b></span>
     </p>
-    <div class="grille-wrap">${tableGrilleHtml(f, [0,1,2,3,4,5,6,7,8,9], true)}</div>
+    <div class="grille-wrap">${tableGrilleHtml(f, moisAffiches(f), true)}</div>
     <div class="legend">
       <span><i style="background:var(--cache)"></i> F1–F4 : objectifs cachés (professeur)</span>
       <span><i style="background:var(--affiche)"></i> F5 : objectif affiché aux élèves</span>
@@ -3870,6 +3993,8 @@ function vueGrille() {
     });
   });
 
+  const selMois = $("#gMois", v);
+  if (selMois) selMois.onchange = e => { moisMobile = +e.target.value; vueGrille(); };
   $("#gMiseEnPage").onchange = e => {
     state.impression = e.target.value;
     state.coupureMigree = true;             // choix explicite : on n'y touchera plus
@@ -3938,6 +4063,14 @@ function tableGrilleHtml(f, idxMois, editable) {
     });
   }
   return h + `</tbody></table>`;
+}
+
+/* Mois montrés à l'écran. L'impression et les exports gardent toujours les dix
+   mois : seule la consultation sur petit écran est restreinte. */
+function moisAffiches(f) {
+  if (!petitEcran()) return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  moisMobile = Math.max(0, Math.min(9, moisMobile));
+  return [moisMobile];
 }
 
 function celluleHtml(val, id, ph, avecPick) {
@@ -4030,8 +4163,14 @@ function vueSeance() {
   </div>`;
 
   const v = $("#view-seance");
+  // Hauteur ajustée au contenu : à deux lignes fixes, les objectifs longs
+  // étaient tronqués — surtout sur téléphone, où la colonne est étroite.
+  const ajuster = t => { t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; };
   $$(".edit", v).forEach(t => {
-    t.addEventListener("input", () => { c[t.dataset.code] = t.value; f.maj = todayIso(); sauver(); });
+    ajuster(t);
+    t.addEventListener("input", () => {
+      c[t.dataset.code] = t.value; ajuster(t); f.maj = todayIso(); sauver();
+    });
     t.addEventListener("blur", () => sauver(true));
   });
   $("#sSel").onchange = e => { seanceSel = +e.target.value; vueSeance(); };
@@ -4844,6 +4983,11 @@ function init() {
     if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); sauver(true); toast("Enregistré"); }
   });
   window.addEventListener("beforeprint", preparerImpression);
+
+  // Rotation du téléphone ou redimensionnement : la grille change de forme.
+  const mq = window.matchMedia(SEUIL_MOBILE);
+  const surBascule = () => { if (vueCourante === "grille") vueGrille(); };
+  mq.addEventListener ? mq.addEventListener("change", surBascule) : mq.addListener(surBascule);
 
   poserFiligrane();
   rendre();

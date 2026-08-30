@@ -42,6 +42,19 @@ et vider les données de navigation les efface. Utilisez le bouton
 **Sauvegarder** pour écrire un fichier `.json`, et **Restaurer** pour le
 relire ailleurs.
 
+## Sur téléphone
+
+La même adresse fonctionne sur téléphone : la page s'adapte à l'écran, il n'y a
+rien d'autre à installer.
+
+La **grille annuelle** s'y consulte **un mois à la fois**, choisi dans un
+sélecteur en haut de l'écran — dix mois côte à côte seraient illisibles. Les
+exports, eux, restent complets : le PDF sort bien l'année entière.
+
+Pour l'avoir sous la main comme une application, dans Safari :
+**Partager → Sur l'écran d'accueil**. Elle s'ouvre alors en plein écran, avec
+son icône, et retrouve vos fiches.
+
 ## Hors ligne
 
 L'application tient dans une seule page. Enregistrez-la
