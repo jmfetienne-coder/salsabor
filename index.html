@@ -360,6 +360,11 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
    Le sélecteur de mois n'apparaît que sur petit écran ; sur grand écran la
    grille montre les dix mois et le sélecteur n'aurait pas de sens.           */
 .mois-mobile{display:none}
+/* Sur grand écran, les actions secondaires sont toutes visibles et la bascule
+   n'a pas lieu d'être. Sur petit écran, elles se replient : rien n'est retiré,
+   seulement mis à un clic. */
+.bascule-plus{display:none}
+.toolbar .secondaire{display:contents}
 
 @media (max-width:760px){
   body{font-size:15px}
@@ -392,6 +397,11 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 
   .toolbar{gap:6px}
   .toolbar .spacer{display:none}
+  .bascule-plus{display:inline-block; font-weight:700; letter-spacing:1px}
+  .toolbar .secondaire{display:none}
+  .toolbar.ouvert .secondaire{display:contents}
+  .lab-impression span{display:none}
+  #gMiseEnPage{max-width:160px}
   .aide-souris{display:none}
   /* Le mois d'abord : c'est le réglage qu'on touche à chaque consultation.
      Les exports et l'entretien de la fiche viennent après. */
@@ -453,6 +463,68 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 
   .footer{flex-direction:column; gap:4px}
   .toast{left:10px; right:10px; transform:none; text-align:center}
+}
+
+/* ---------- Téléphone en paysage ----------
+   812 x 375 : la largeur ne manque pas, la hauteur si. Tout l'encombrement
+   vertical est resserré — sans quoi la grille commençait 406 px plus bas que
+   le haut de l'écran, donc entièrement hors champ. */
+@media (max-height:520px) and (orientation:landscape){
+  .topbar{padding:4px 10px; gap:8px; position:static}
+  /* Le logo suffit à identifier l'application : le nom écrit coûtait une
+     rangée entière du bandeau, sur un écran qui n'a que 375 px de haut. */
+  .brand p,.brand h1{display:none}
+  .logo{width:28px; height:28px; border-radius:7px; font-size:12px}
+  .fiche-picker label{display:none}
+  /* 833 px de contenu pour 812 disponibles : 25 px de moins ici, et le bandeau
+     tient sur une seule rangée — 36 px regagnés pour la grille. */
+  #selFiche{max-width:160px}
+  .topbar .btn{padding:5px 9px; font-size:12.5px}
+
+  .tabs{position:static; padding:0 8px}
+  .tab{padding:6px 10px; font-size:13px}
+
+  main{padding:8px}
+  .card{padding:10px; margin-bottom:8px}
+  .toolbar{gap:5px; margin-bottom:7px}
+  .toolbar .btn.small{padding:5px 9px; font-size:12.5px}
+  .aide-souris{display:none}
+  /* width:auto annule la règle du portrait : en paysage, le menu ne doit pas
+     occuper une rangée à lui seul. */
+  .mois-mobile{display:flex; align-items:center; gap:6px; order:-2; width:auto}
+  .mois-mobile select{flex:0 1 auto; max-width:210px}
+  #gPdf{order:-1}
+
+  .entete-fiche{font-size:11px; margin-bottom:6px}
+  .detail-fiche{display:none}
+  /* Le titre est déjà dans le bandeau supérieur, et vider ou recharger la
+     grille n'est pas ce qu'on fait sur un téléphone : 70 px regagnés pour le
+     contenu, sur un écran qui n'en compte que 375. */
+  #view-grille .card h2{display:none}
+  .bascule-plus{display:inline-block; font-weight:700; letter-spacing:1px}
+  .toolbar .secondaire{display:none}
+  .toolbar.ouvert .secondaire{display:contents}
+  /* Le libellé disparaît, le menu reste : une seule rangée d'outils. */
+  .lab-impression span{display:none}
+  #gMiseEnPage{max-width:145px}
+
+  /* La grille défile dans sa propre fenêtre : les en-têtes restent visibles.
+     La hauteur exacte est posée par calerHauteurGrille(). */
+  .grille-wrap{max-height:calc(100vh - 175px)}
+  .table-wrap{max-height:calc(100vh - 175px)}
+  table.grille{font-size:12px}
+  table.grille th.sem{width:32px; min-width:32px; font-size:10px}
+  table.grille th.champ{left:32px; width:104px; min-width:104px; font-size:10px}
+  table.grille col.csem{width:32px}
+  table.grille col.cchamp{width:104px}
+
+  .seance-grid{grid-template-columns:1fr 1fr}
+  .grid-cards{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+
+  select,input,textarea{font-size:16px}
+  .modal-backdrop{padding:0}
+  .modal{width:100%; height:100%; max-height:100vh; border-radius:0}
+  .footer{display:none}
 }
 
 /* Très petits écrans : on gagne encore sur les colonnes de tête. */
@@ -3418,8 +3490,17 @@ const FILIGRANE = "version JM ETIENNE";
 
 /* Sur téléphone, la grille se lit un mois à la fois : douze colonnes sur
    375 px ne sont pas consultables. Le seuil vaut aussi pour la mise en page. */
-const SEUIL_MOBILE = "(max-width: 760px)";
+/* Un téléphone en paysage fait 812 px de large : le seul critère de largeur le
+   classait comme un ordinateur, alors qu'il n'a que 375 px de haut. On teste
+   donc aussi la hauteur. */
+const SEUIL_MOBILE = "(max-width: 760px), (max-height: 520px) and (orientation: landscape)";
 const petitEcran = () => window.matchMedia(SEUIL_MOBILE).matches;
+
+/* Nombre de mois tenant à l'écran : un en portrait, deux à trois en paysage,
+   où la largeur ne manque pas. */
+function nbMoisVisibles() {
+  return Math.max(1, Math.min(4, Math.floor((window.innerWidth - 150) / 200)));
+}
 let moisMobile = 0;
 
 /* Motif SVG répété en diagonale, encodé en URI de données. */
@@ -3917,22 +3998,29 @@ function vueDashboard() {
 /* ============================ Vue : grille annuelle ============================ */
 function vueGrille() {
   const f = fiche();
+  const visibles = moisAffiches(f);
+  const nbVisibles = visibles.length;
   let html = `
   <div class="toolbar no-print">
-    <button class="btn ghost small" id="gExportXls">Exporter vers Excel</button>
-    <button class="btn ghost small" id="gExportCsv">Exporter en CSV</button>
     <button class="btn small" id="gPdf" title="Ouvre l'impression : choisissez « Enregistrer au format PDF », papier A3 paysage">Exporter en PDF (A3)</button>
-    <button class="btn ghost small" id="gVider">Vider la grille</button>
-    <button class="btn ghost small" id="gModele">Recharger le modèle Mambo</button>
-    <label style="font-size:12px;color:var(--ink-soft)">Impression
+    <button class="btn ghost small bascule-plus" id="gPlus" title="Autres actions">⋯</button>
+    <span class="secondaire">
+      <button class="btn ghost small" id="gExportXls">Exporter vers Excel</button>
+      <button class="btn ghost small" id="gExportCsv">Exporter en CSV</button>
+      <button class="btn ghost small" id="gVider">Vider la grille</button>
+      <button class="btn ghost small" id="gModele">Recharger le modèle Mambo</button>
+    </span>
+    <label class="lab-impression" style="font-size:12px;color:var(--ink-soft)"><span>Impression</span>
       <select id="gMiseEnPage" style="font-size:12px">
         <option value="2niveaux"${state.impression === "2niveaux" ? " selected" : ""}>A3 — 2 pages, coupure au changement de niveau</option>
         <option value="2pages"${state.impression === "2pages" ? " selected" : ""}>A3 — 2 pages, 5 mois par page (texte plus grand)</option>
         <option value="1page"${state.impression === "1page" ? " selected" : ""}>A3 — 1 page (très réduit)</option>
       </select></label>
-    <label class="mois-mobile" style="font-size:12px;color:var(--ink-soft)">Mois affiché
+    <label class="mois-mobile" style="font-size:12px;color:var(--ink-soft)">${nbVisibles > 1 ? "À partir de" : "Mois affiché"}
       <select id="gMois" style="font-size:16px">
-        ${f.mois.map((m, i) => `<option value="${i}"${i === moisMobile ? " selected" : ""}>${i + 1}. ${esc(m)}</option>`).join("")}
+        ${Array.from({ length: 11 - nbVisibles }, (_, i) => `<option value="${i}"${i === moisMobile ? " selected" : ""}>` +
+          (nbVisibles > 1 ? `${esc(f.mois[i])} → ${esc(f.mois[i + nbVisibles - 1])}` : `${i + 1}. ${esc(f.mois[i])}`) +
+          `</option>`).join("")}
       </select></label>
     <span class="spacer"></span>
     <span class="muted aide-souris" style="font-size:12px">Cliquez dans une cellule pour saisir · bouton ▾ pour la liste du référentiel</span>
@@ -3945,7 +4033,7 @@ function vueGrille() {
       Timing : <b>${esc(f.timing || "—")}</b> · Année scolaire : <b>${esc(f.annee)}</b> ·
       Dernière mise à jour : <b>${esc(frDate(f.maj))}</b></span>
     </p>
-    <div class="grille-wrap">${tableGrilleHtml(f, moisAffiches(f), true)}</div>
+    <div class="grille-wrap">${tableGrilleHtml(f, visibles, true)}</div>
     <div class="legend">
       <span><i style="background:var(--cache)"></i> F1–F4 : objectifs cachés (professeur)</span>
       <span><i style="background:var(--affiche)"></i> F5 : objectif affiché aux élèves</span>
@@ -4005,6 +4093,11 @@ function vueGrille() {
     toast("Dans la fenêtre d'impression : « Enregistrer au format PDF », papier A3 paysage");
     setTimeout(() => window.print(), 400);
   };
+  $("#gPlus", v).onclick = () => {
+    $(".toolbar", v).classList.toggle("ouvert");
+    calerHauteurGrille();
+  };
+  calerHauteurGrille();
   $("#gExportXls").onclick = exporterXls;
   $("#gExportCsv").onclick = exporterCsv;
   $("#gVider").onclick = () => {
@@ -4065,12 +4158,24 @@ function tableGrilleHtml(f, idxMois, editable) {
   return h + `</tbody></table>`;
 }
 
+/* Sur écran court, la fenêtre de défilement de la grille s'arrête au bas de
+   l'écran : une valeur en dur ferait déborder la page, et les en-têtes
+   collants perdraient tout intérêt. */
+function calerHauteurGrille() {
+  const wrap = $("#view-grille .grille-wrap");
+  if (!wrap) return;
+  if (!petitEcran() || window.innerHeight > 520) { wrap.style.maxHeight = ""; return; }
+  const dispo = window.innerHeight - wrap.getBoundingClientRect().top - 10;
+  wrap.style.maxHeight = Math.max(120, dispo) + "px";
+}
+
 /* Mois montrés à l'écran. L'impression et les exports gardent toujours les dix
    mois : seule la consultation sur petit écran est restreinte. */
 function moisAffiches(f) {
   if (!petitEcran()) return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  moisMobile = Math.max(0, Math.min(9, moisMobile));
-  return [moisMobile];
+  const n = nbMoisVisibles();
+  moisMobile = Math.max(0, Math.min(10 - n, moisMobile));
+  return Array.from({ length: n }, (_, i) => moisMobile + i);
 }
 
 function celluleHtml(val, id, ph, avecPick) {
@@ -4985,9 +5090,13 @@ function init() {
   window.addEventListener("beforeprint", preparerImpression);
 
   // Rotation du téléphone ou redimensionnement : la grille change de forme.
-  const mq = window.matchMedia(SEUIL_MOBILE);
-  const surBascule = () => { if (vueCourante === "grille") vueGrille(); };
-  mq.addEventListener ? mq.addEventListener("change", surBascule) : mq.addListener(surBascule);
+  let redim = null;
+  const surBascule = () => {
+    clearTimeout(redim);
+    redim = setTimeout(() => { if (vueCourante === "grille") vueGrille(); }, 150);
+  };
+  window.addEventListener("resize", surBascule);
+  window.addEventListener("orientationchange", surBascule);
 
   poserFiligrane();
   rendre();
