@@ -10,7 +10,7 @@ d'un cours de danse : **40 semaines réparties sur 10 mois**, de septembre à ju
 | Onglet | À quoi il sert |
 |---|---|
 | **Tableau de bord** | Avancement de la fiche, progression mois par mois, prochaine séance. |
-| **Grille annuelle** | La fiche complète : 10 mois × 4 semaines × 9 champs. |
+| **Grille annuelle** | La fiche complète : 10 mois × 4 semaines × 9 champs. Export PDF A3, Excel, CSV. |
 | **Séance** | La fiche d'un cours, à imprimer ou exporter en PDF A4 pour l'emporter en salle. |
 | **Calendrier** | Date les 40 séances à partir de la rentrée, vacances déduites. Export `.ics`. |
 | **Référentiel** | Objectifs, supports chorégraphiques et outils pédagogiques, éditables. |
@@ -50,14 +50,34 @@ connexion.
 
 ## Impression et PDF
 
-Grille annuelle en A3 paysage — 2 pages, ou 1 page réduite ; fiche de séance en
-A4 portrait.
+Deux boutons **Exporter en PDF** :
 
-Deux boutons **Exporter en PDF** : dans l'onglet **Grille annuelle** pour la
-fiche de programmation annuelle (A3 paysage), dans l'onglet **Séance** pour la
-fiche d'un cours (A4 portrait). Tous deux ouvrent la fenêtre d'impression, où
-il faut choisir **« Enregistrer au format PDF »**. Le PDF obtenu est vectoriel,
-son texte reste sélectionnable.
+| Onglet | Bouton | Résultat |
+|---|---|---|
+| **Grille annuelle** | Exporter en PDF (A3) | la fiche de programmation annuelle, A3 paysage |
+| **Séance** | Exporter en PDF | la fiche d'un cours, A4 portrait, une page |
+
+Tous deux ouvrent la fenêtre d'impression, où il faut choisir
+**« Enregistrer au format PDF »** — menu *Destination* dans Chrome, menu *PDF*
+en bas à gauche dans Safari. Le PDF obtenu est vectoriel : son texte reste
+sélectionnable et recherchable.
+
+Pour la grille, un sélecteur voisin propose trois mises en page :
+
+- **2 pages, coupure au changement de niveau** *(défaut)* — Sept.–Déc. puis
+  Janv.–Juin, de façon qu'un sous-niveau ne soit jamais coupé en deux ;
+- **2 pages, 5 mois par page** — Sept.–Janv. puis Févr.–Juin ;
+- **1 page** — les dix mois, texte plus petit.
+
+### Trois réglages qui changent tout
+
+- **Papier A3 paysage** pour la grille. La page le demande d'elle-même, mais un
+  réglage manuel resté sur A4 prendrait le dessus.
+- **Marges par défaut.** Des marges élargies font déborder la grille sur une
+  page de plus.
+- **Impression des arrière-plans**, si votre navigateur ne les affiche pas dans
+  l'aperçu : « Graphiques d'arrière-plan » dans Chrome, « Imprimer les
+  arrière-plans » dans Safari. Sans quoi le code couleur disparaît.
 
 ---
 
