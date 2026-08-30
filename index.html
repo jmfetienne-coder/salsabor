@@ -334,13 +334,12 @@ table.data td .celledit:focus{outline:2px solid var(--accent); outline-offset:-2
 #printZone table.grille col.mois{width:auto}
 #printZone table.grille th,#printZone table.grille td{border:.4pt solid #999}
 #printZone table.grille thead th{position:static; padding:3pt 4pt}
-/* La colonne SEM. doit loger « (Révision) » : à 7 pt il réclamait 57 px pour
-   45 disponibles, et débordait sur la colonne voisine — d'où un chevauchement
-   à l'impression. Colonne élargie, corps réduit, et repli de sécurité. */
-#printZone table.grille col.csem{width:54px}
-#printZone table.grille col.cchamp{width:150px}
-#printZone table.grille th.sem{position:static; width:auto; min-width:0;
-                               font-size:5.6pt; line-height:1.15; padding:2pt 1pt}
+/* Largeurs et corps d'origine conservés : SEM. 46 px, Champ 158 px.
+   Seul « (Révision) » débordait — 57 px réclamés pour 43 disponibles, d'où un
+   chevauchement sur la colonne voisine. C'est donc lui seul qu'on réduit ;
+   « S1 » à « S4 » gardent leur taille. */
+#printZone table.grille th.sem{position:static; width:auto; min-width:0; padding:2pt 1pt}
+#printZone table.grille th.sem .rev{display:inline-block; font-size:4.8pt; line-height:1.1}
 #printZone table.grille th.champ{position:static; width:auto; min-width:0; padding:3pt 4pt}
 #printZone table.grille th.sem,#printZone table.grille th.champ{
   overflow-wrap:break-word; word-break:normal; hyphens:none}
@@ -3921,7 +3920,7 @@ function tableGrilleHtml(f, idxMois, editable) {
     CHAMPS.forEach((ch, ci) => {
       const first = ci === 0;
       h += `<tr class="${first ? "sem-start " : ""}${sem === "S4" ? "revision" : ""}">`;
-      if (first) h += `<th class="sem" rowspan="${CHAMPS.length}">${sem}${sem === "S4" ? "<br>(Révision)" : ""}</th>`;
+      if (first) h += `<th class="sem" rowspan="${CHAMPS.length}">${sem}${sem === "S4" ? '<br><span class="rev">(Révision)</span>' : ""}</th>`;
       h += `<th class="champ rowhead-${ch.classe}">${esc(ch.label)}</th>`;
       for (const m of idxMois) {
         const c = cellule(m, sem);
